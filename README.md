@@ -1,5 +1,7 @@
-Integrantes: 
-Tastaca Lugo, Aylen
+# Integrantes
+- **Integrante 1:** Casas Ortiz de Rosas, Juan Bautista
+- **Integrante 2:** Tastaca Lugo, Aylen
+
 
 
 # Vetsoft
