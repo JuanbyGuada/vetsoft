@@ -86,17 +86,6 @@ class Product(models.Model):
     type = models.CharField(max_length=50)
     price = models.DecimalField(max_digits=10, decimal_places=2)
 
-
-#  Pet Class
-class Pet(models.Model):
-    name = models.CharField(max_length=100)
-    breed = models.CharField(max_length=100)
-    birthday= models.DateField()
-
-    def __str__(self):
-        return self.name
-    
-    
     @classmethod
     def save_product(cls, product_data):
         errors = validate_product(product_data)
@@ -118,6 +107,17 @@ class Pet(models.Model):
         self.price = product_data.get("price", "") or self.price
 
         self.save() 
+
+
+#  Pet Class
+class Pet(models.Model):
+    name = models.CharField(max_length=100)
+    breed = models.CharField(max_length=100)
+    birthday= models.DateField()
+
+    def __str__(self):
+        return self.name
+    
     @classmethod
     def save_pet(cls, pet_data):
         Pet.objects.create(
