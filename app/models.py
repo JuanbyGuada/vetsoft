@@ -54,7 +54,7 @@ class Client(models.Model):
         self.address = client_data.get("address", "") or self.address
         self.save()
 
-#  Producto Class
+#  Product Class
 
 def validate_product(data):
     errors = {}
@@ -87,6 +87,12 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
 
 
+#  Pet Class
+class Pet(models.Model):
+    name = models.CharField(max_length=100)
+    breed = models.CharField(max_length=100)
+    birthday= models.DateField()
+
     def __str__(self):
         return self.name
     
@@ -112,3 +118,18 @@ class Product(models.Model):
         self.price = product_data.get("price", "") or self.price
 
         self.save() 
+    @classmethod
+    def save_pet(cls, pet_data):
+        Pet.objects.create(
+            name=pet_data.get("name"),
+            breed=pet_data.get("breed"),
+            birthday=pet_data.get("birthday"),
+        )
+        return True, None
+    
+    def update_pet(self, pet_data):
+        self.name = pet_data.get("name", "") or self.name
+        self.breed = pet_data.get("breed", "") or self.breed
+        self.birthday = pet_data.get("birthday", "") or self.birthday
+
+        self.save()
