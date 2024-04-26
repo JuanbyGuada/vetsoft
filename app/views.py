@@ -1,9 +1,5 @@
 from django.shortcuts import render, redirect, reverse, get_object_or_404
-<<<<<<< HEAD
-from .models import Client, Product, Pet, Vet
-=======
-from .models import Client, Product, Pet, Medicine
->>>>>>> ABM-Medicine
+from .models import Client, Product, Pet, Vet, Medicine
 
 
 def home(request):
