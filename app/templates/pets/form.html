@@ -58,12 +58,10 @@
                         class="form-control"
                         value="{{ pet.birthday }}"
                         required/>
-
-                    {% if errors.birthday %}
-                        <div class="invalid-feedback">
-                            {{ errors.birthday }}
-                        </div>
-                    {% endif %}
+                        
+                        {% if errors.birthday %}
+                            <div class="error">{{ errors.birthday }}</div>
+                        {% endif %}
                 </div>
 
                 <button class="btn btn-primary">Guardar</button>

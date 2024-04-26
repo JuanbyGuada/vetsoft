@@ -110,7 +110,7 @@ def pets_form(request, id=None):
             return redirect(reverse("pets_repo"))
 
         return render(
-            request, "pets/form.html", {"errors": errors, "pet": pet}
+            request, "pets/form.html", {"errors": errors, "pet": request.POST}
         )
 
     pet = None
