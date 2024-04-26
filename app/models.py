@@ -157,4 +157,27 @@ class Vet(models.Model):
         self.email = vet_data.get("email", "") or self.email
         self.phone = vet_data.get("phone", "") or self.phone
 
+#  Medicine Class
+class Medicine(models.Model):
+    name = models.CharField(max_length=100)
+    description = models.CharField(max_length=200)
+    dose = models.IntegerField()
+
+    def __str__(self):
+        return self.name
+    
+    @classmethod
+    def save_medicine(cls, medicine_data):
+        Medicine.objects.create(
+            name=medicine_data.get("name"),
+            description=medicine_data.get("description"),
+            dose=medicine_data.get("dose"),
+        )
+        return True, None
+    
+    def update_medicine(self, medicine_data):
+        self.name = medicine_data.get("name", "") or self.name
+        self.description = medicine_data.get("description", "") or self.description
+        self.dose = medicine_data.get("dose", "") or self.dose
+
         self.save()

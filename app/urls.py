@@ -23,6 +23,11 @@ urlpatterns = [
     path("veterinarios/nuevo/", view=views.vets_form, name="vets_form"),
     path("veterinarios/editar/<int:id>/", view=views.vets_form, name="vets_edit"),
     path("veterinarios/eliminar/", view=views.vets_delete, name="vets_delete"),
+    #MEDICINES
+    path("medicamentos/", view=views.medicines_repository, name="medicines_repo"),
+    path("medicamentos/nuevo/", view=views.medicines_form, name="medicines_form"),
+    path("medicamentos/editar/<int:id>/", view=views.medicines_form, name="medicines_edit"),
+    path("medicamentos/eliminar/", view=views.medicines_delete, name="medicines_delete"),
 ]
 
 
