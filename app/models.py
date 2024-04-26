@@ -54,7 +54,7 @@ class Client(models.Model):
         self.address = client_data.get("address", "") or self.address
         self.save()
 
-#  Producto 
+#  Producto Class
 
 def validate_product(data):
     errors = {}
