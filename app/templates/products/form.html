@@ -68,6 +68,17 @@
                     {% endif %}
                 </div>
 
+                <div>
+                    <label for="provider" class="form-label">Proveedor</label>
+                    <select id="provider" name="provider" class="form-control" required>
+                        {% for provider in providers %}
+                            <option value="{{ provider.id }}" {% if product.provider and product.provider.id == provider.id %}selected{% endif %}>
+                                {{ provider.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
                 <button class="btn btn-primary">Guardar</button>
             </form>
         </div>

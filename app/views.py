@@ -45,8 +45,61 @@ def clients_delete(request):
     return redirect(reverse("clients_repo"))
 
 
+#provider
+
+
+def providers_repository(request):
+    providers = Provider.objects.all()
+    return render(request, "providers/repository.html", {"providers": providers})
+
+
+def providers_form(request, id=None):
+    if request.method == "POST":
+        provider_id = request.POST.get("id", "")
+        errors = {}
+        saved = True
+
+        if provider_id == "":
+            saved, errors = Provider.save_provider(request.POST)
+        else:
+            provider = get_object_or_404(Provider, pk=provider_id)
+            provider.update_provider(request.POST)
+
+        if saved:
+            return redirect(reverse("providers_repo"))
+
+        return render(
+            request, "providers/form.html", {"errors": errors, "provider": request.POST}
+        )
+
+    provider = None
+    if id is not None:
+        provider = get_object_or_404(Provider, pk=id)
+
+    return render(request, "providers/form.html", {"provider": provider})
+
+def provider_products(request, provider_id):
+    provider = Provider.objects.get(pk=provider_id)
+    products = provider.products.all()
+    return render(request, 'provider_products.html', {'provider': provider, 'products': products})
+
+
+def providers_delete(request):
+    provider_id = request.POST.get("provider_id")
+    provider = get_object_or_404(Provider, pk=int(provider_id))
+    provider.delete()
+
+    return redirect(reverse("providers_repo"))
+
+
 
 #product
+
+
+def product_list(request):
+    # Utiliza select_related para obtener los detalles del proveedor junto con cada producto
+    products = Product.objects.select_related('provider').all()
+    return render(request, 'product_list.html', {'products': products})
 
 def products_repository(request):
     products = Product.objects.all()
@@ -55,8 +108,12 @@ def products_repository(request):
 
 
 def products_form(request, id=None):
+
+    providers = Provider.objects.all()  # Carga todos los proveedores
+
     if request.method == "POST":
         product_id = request.POST.get("id", "")
+
         errors = {}
         saved = True
 
@@ -70,7 +127,7 @@ def products_form(request, id=None):
             return redirect(reverse("products_repo"))
 
         return render(
-            request, "products/form.html", {"errors": errors, "product": request.POST}
+            request, "products/form.html", {"errors": errors, "product": request.POST, "providers": providers }
         )
 
     product = None
@@ -201,48 +258,6 @@ def medicines_delete(request):
     medicine.delete()
 
     return redirect(reverse("medicines_repo"))
-
-
-#provider
-
-
-def providers_repository(request):
-    providers = Provider.objects.all()
-    return render(request, "providers/repository.html", {"providers": providers})
-
-
-def providers_form(request, id=None):
-    if request.method == "POST":
-        provider_id = request.POST.get("id", "")
-        errors = {}
-        saved = True
-
-        if provider_id == "":
-            saved, errors = Provider.save_provider(request.POST)
-        else:
-            provider = get_object_or_404(Provider, pk=provider_id)
-            provider.update_provider(request.POST)
-
-        if saved:
-            return redirect(reverse("providers_repo"))
-
-        return render(
-            request, "providers/form.html", {"errors": errors, "provider": request.POST}
-        )
-
-    provider = None
-    if id is not None:
-        provider = get_object_or_404(Provider, pk=id)
-
-    return render(request, "providers/form.html", {"provider": provider})
-
-
-def providers_delete(request):
-    provider_id = request.POST.get("provider_id")
-    provider = get_object_or_404(Provider, pk=int(provider_id))
-    provider.delete()
-
-    return redirect(reverse("providers_repo"))
 
 
 

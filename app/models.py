@@ -55,6 +55,54 @@ class Client(models.Model):
         self.address = client_data.get("address", "") or self.address
         self.save()
 
+        
+
+    
+#  Provider Class
+
+def validate_provider(data):
+    errors = {}
+
+    name = data.get("name", "")
+    email = data.get("email", "")
+
+
+    if name == "":
+        errors["name"] = "Por favor ingrese un nombre"
+
+    if email == "":
+        errors["email"] = "Por favor ingrese un email"
+    elif email.count("@") == 0:
+        errors["email"] = "Por favor ingrese un email valido"
+
+    return errors
+
+
+class Provider(models.Model):
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
+
+
+    @classmethod
+    def save_provider(cls, provider_data):
+        errors = validate_provider(provider_data)
+
+        if len(errors.keys()) > 0:
+            return False, errors
+
+        Provider.objects.create(
+            name=provider_data.get("name"),
+            email=provider_data.get("email"),
+        )
+
+        return True, None
+
+    def update_provider(self, provider_data):
+        self.name = provider_data.get("name", "") or self.name
+        self.email = provider_data.get("email", "") or self.email
+
+        self.save() 
+        
 #  Product Class
 
 def validate_product(data):
@@ -86,6 +134,7 @@ class Product(models.Model):
     name = models.CharField(max_length=100)
     type = models.CharField(max_length=50)
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    provider = models.ForeignKey(Provider, on_delete=models.CASCADE, related_name='products')
 
     @classmethod
     def save_product(cls, product_data):
@@ -266,49 +315,3 @@ class Medicine(models.Model):
 
         self.save()
 
-
-    
-#  Provider Class
-
-def validate_provider(data):
-    errors = {}
-
-    name = data.get("name", "")
-    email = data.get("email", "")
-
-
-    if name == "":
-        errors["name"] = "Por favor ingrese un nombre"
-
-    if email == "":
-        errors["email"] = "Por favor ingrese un email"
-    elif email.count("@") == 0:
-        errors["email"] = "Por favor ingrese un email valido"
-
-    return errors
-
-
-class Provider(models.Model):
-    name = models.CharField(max_length=100)
-    email = models.EmailField()
-
-
-    @classmethod
-    def save_provider(cls, provider_data):
-        errors = validate_provider(provider_data)
-
-        if len(errors.keys()) > 0:
-            return False, errors
-
-        Provider.objects.create(
-            name=provider_data.get("name"),
-            email=provider_data.get("email"),
-        )
-
-        return True, None
-
-    def update_provider(self, provider_data):
-        self.name = provider_data.get("name", "") or self.name
-        self.email = provider_data.get("email", "") or self.email
-
-        self.save() 
