@@ -166,6 +166,27 @@ class Pet(models.Model):
         self.save()
 
 #  Vet Class
+
+def validate_vet(data):
+    errors = {}
+
+    name = data.get("name", "")
+    phone = data.get("phone", "")
+    email = data.get("email", "")
+
+    if name == "":
+        errors["name"] = "Por favor ingrese un nombre"
+
+    if phone == "":
+        errors["phone"] = "Por favor ingrese un teléfono"
+
+    if email == "":
+        errors["email"] = "Por favor ingrese un email"
+    elif email.count("@") == 0:
+        errors["email"] = "Por favor ingrese un email valido"
+
+    return errors
+
 class Vet(models.Model):
     name = models.CharField(max_length=100)
     email = models.EmailField()
@@ -176,6 +197,11 @@ class Vet(models.Model):
 
     @classmethod
     def save_vet(cls, vet_data):
+        errors = validate_client(vet_data)
+
+        if len(errors.keys()) > 0:
+            return False, errors
+
         Vet.objects.create(
             name=vet_data.get("name"),
             email=vet_data.get("email"),
@@ -192,6 +218,25 @@ class Vet(models.Model):
 
 
 #  Medicine Class
+
+def validate_medicine(data):
+    errors = {}
+
+    name = data.get("name", "")
+    description = data.get("description", "")
+    dose = data.get("dose", "")
+
+    if name == "":
+        errors["name"] = "Por favor ingrese un nombre"
+
+    if description == "":
+        errors["description"] = "Por favor ingrese una descripción"
+
+    if dose == "":
+        errors["dose"] = "Por favor ingrese una dosis"
+
+    return errors
+
 class Medicine(models.Model):
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=200)
@@ -202,6 +247,11 @@ class Medicine(models.Model):
     
     @classmethod
     def save_medicine(cls, medicine_data):
+        errors = validate_medicine(medicine_data)
+
+        if len(errors.keys()) > 0:
+            return False, errors
+
         Medicine.objects.create(
             name=medicine_data.get("name"),
             description=medicine_data.get("description"),
