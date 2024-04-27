@@ -1,6 +1,9 @@
 from django.db import models
 from datetime import datetime
 
+#debo editar el proveedor para que seleccione sus productos o no. Tal vez eso puede ser extra
+#importante : seleccionar el proveedor desde una lista
+
 
 def validate_client(data):
     errors = {}
@@ -142,11 +145,15 @@ class Product(models.Model):
 
         if len(errors.keys()) > 0:
             return False, errors
+        
+        provider_id = product_data.get("provider")  # Asumiendo que 'provider' es la clave en product_data donde se almacena el ID del proveedor
+        provider = Provider.objects.get(pk=provider_id) 
 
         Product.objects.create(
             name=product_data.get("name"),
             type=product_data.get("type"),
             price=product_data.get("price"),
+            provider=provider,
         )
 
         return True, None
@@ -156,6 +163,9 @@ class Product(models.Model):
         self.type = product_data.get("type", "") or self.type
         self.price = product_data.get("price", "") or self.price
 
+        if 'provider' in product_data:
+            provider_id = product_data.get("provider")
+            self.provider = Provider.objects.get(pk=provider_id)
         self.save() 
 
 

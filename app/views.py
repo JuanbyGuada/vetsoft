@@ -109,7 +109,8 @@ def products_repository(request):
 
 def products_form(request, id=None):
 
-    providers = Provider.objects.all()  # Carga todos los proveedores
+    providers = Provider.objects.all()  
+
 
     if request.method == "POST":
         product_id = request.POST.get("id", "")
@@ -129,10 +130,16 @@ def products_form(request, id=None):
         return render(
             request, "products/form.html", {"errors": errors, "product": request.POST, "providers": providers }
         )
+    
+    else:
+        product = None
+        if id is not None:
+            product = get_object_or_404(Product, pk=id)
+            return render(request, "products/form.html", {"product": product, "providers": providers})
+        
+        return render(request, "products/form.html", {"providers": providers})
 
-    product = None
-    if id is not None:
-        product = get_object_or_404(Product, pk=id)
+    
         
 
     return render(request, "products/form.html", {"product": product})
