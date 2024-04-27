@@ -127,6 +127,22 @@ def pets_delete(request):
 
     return redirect(reverse("pets_repo"))
 
+def mascota_detalle(request, mascota_id):
+    mascota = get_object_or_404(Pet, pk=mascota_id)
+    veterinarios = mascota.vets.all()
+    return render(request, 'pet-vet/mascota_detalle.html', {'mascota': mascota, 'veterinarios': veterinarios})
+
+def asociar_veterinario(request, mascota_id):
+    if request.method == 'POST':
+        veterinario_id = request.POST.get('veterinario_id')
+        mascota = get_object_or_404(Pet, pk=mascota_id)
+        veterinario = get_object_or_404(Vet, pk=veterinario_id)
+        mascota.vets.add(veterinario)
+        return redirect('mascota_detalle', mascota_id=mascota_id)
+    else:
+        veterinarios = Vet.objects.all()
+        return render(request, 'pet-vet/asociar_veterinario.html', {'veterinarios': veterinarios, 'mascota_id': mascota_id})
+
 # vet
 
 def vets_repository(request):

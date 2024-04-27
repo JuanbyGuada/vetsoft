@@ -31,11 +31,12 @@
                     <a class="btn btn-outline-primary"
                        href="{% url 'pets_edit' id=pet.id %}"
                     >Editar</a>
+                    <a class="btn btn-outline-primary"
+                        href="{% url 'mascota_detalle' mascota_id=pet.id %}"                    >Ver Veterinarios</a>
                     <form method="POST"
                         action="{% url 'pets_delete' %}"
                         aria-label="Formulario de eliminación de mascota">
                         {% csrf_token %}
-
                         <input type="hidden" name="pet_id" value="{{ pet.id }}" />
                         <button class="btn btn-outline-danger">Eliminar</button>
                     </form>
