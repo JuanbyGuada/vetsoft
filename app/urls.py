@@ -36,6 +36,7 @@ urlpatterns = [
     #PET_VET
     path('mascota/<int:mascota_id>/', views.mascota_detalle, name='mascota_detalle'),
     path('asociar_veterinario/<int:mascota_id>/', views.asociar_veterinario, name='asociar_veterinario'),
+    path('desasociar_veterinario/<int:mascota_id>/<int:veterinario_id>/', views.desasociar_veterinario, name='desasociar_veterinario'),
 
 ]
 

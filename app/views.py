@@ -206,6 +206,12 @@ def asociar_veterinario(request, mascota_id):
     else:
         veterinarios = Vet.objects.all()
         return render(request, 'pet-vet/asociar_veterinario.html', {'veterinarios': veterinarios, 'mascota_id': mascota_id})
+    
+def desasociar_veterinario(request, mascota_id, veterinario_id):
+    mascota = get_object_or_404(Pet, pk=mascota_id)
+    veterinario = get_object_or_404(Vet, pk=veterinario_id)
+    mascota.vets.remove(veterinario)
+    return redirect('mascota_detalle', mascota_id=mascota_id)
 
 # vet
 

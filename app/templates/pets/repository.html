@@ -32,7 +32,7 @@
                        href="{% url 'pets_edit' id=pet.id %}"
                     >Editar</a>
                     <a class="btn btn-outline-primary"
-                        href="{% url 'mascota_detalle' mascota_id=pet.id %}"                    >Ver Veterinarios</a>
+                        href="{% url 'mascota_detalle' mascota_id=pet.id %}">Ver sus veterinarios</a>
                     <form method="POST"
                         action="{% url 'pets_delete' %}"
                         aria-label="Formulario de eliminación de mascota">
