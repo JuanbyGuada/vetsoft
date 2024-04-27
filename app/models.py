@@ -1,6 +1,9 @@
 from django.db import models
 from datetime import datetime
 
+#debo editar el proveedor para que seleccione sus productos o no. Tal vez eso puede ser extra
+#importante : seleccionar el proveedor desde una lista
+
 
 def validate_client(data):
     errors = {}
@@ -55,6 +58,54 @@ class Client(models.Model):
         self.address = client_data.get("address", "") or self.address
         self.save()
 
+        
+
+    
+#  Provider Class
+
+def validate_provider(data):
+    errors = {}
+
+    name = data.get("name", "")
+    email = data.get("email", "")
+
+
+    if name == "":
+        errors["name"] = "Por favor ingrese un nombre"
+
+    if email == "":
+        errors["email"] = "Por favor ingrese un email"
+    elif email.count("@") == 0:
+        errors["email"] = "Por favor ingrese un email valido"
+
+    return errors
+
+
+class Provider(models.Model):
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
+
+
+    @classmethod
+    def save_provider(cls, provider_data):
+        errors = validate_provider(provider_data)
+
+        if len(errors.keys()) > 0:
+            return False, errors
+
+        Provider.objects.create(
+            name=provider_data.get("name"),
+            email=provider_data.get("email"),
+        )
+
+        return True, None
+
+    def update_provider(self, provider_data):
+        self.name = provider_data.get("name", "") or self.name
+        self.email = provider_data.get("email", "") or self.email
+
+        self.save() 
+        
 #  Product Class
 
 def validate_product(data):
@@ -86,6 +137,7 @@ class Product(models.Model):
     name = models.CharField(max_length=100)
     type = models.CharField(max_length=50)
     price = models.DecimalField(max_digits=10, decimal_places=2)
+    provider = models.ForeignKey(Provider, on_delete=models.CASCADE, related_name='products')
 
     @classmethod
     def save_product(cls, product_data):
@@ -93,11 +145,15 @@ class Product(models.Model):
 
         if len(errors.keys()) > 0:
             return False, errors
+        
+        provider_id = product_data.get("provider")  # Asumiendo que 'provider' es la clave en product_data donde se almacena el ID del proveedor
+        provider = Provider.objects.get(pk=provider_id) 
 
         Product.objects.create(
             name=product_data.get("name"),
             type=product_data.get("type"),
             price=product_data.get("price"),
+            provider=provider,
         )
 
         return True, None
@@ -107,6 +163,9 @@ class Product(models.Model):
         self.type = product_data.get("type", "") or self.type
         self.price = product_data.get("price", "") or self.price
 
+        if 'provider' in product_data:
+            provider_id = product_data.get("provider")
+            self.provider = Provider.objects.get(pk=provider_id)
         self.save() 
 
 
@@ -267,49 +326,3 @@ class Medicine(models.Model):
 
         self.save()
 
-
-    
-#  Provider Class
-
-def validate_provider(data):
-    errors = {}
-
-    name = data.get("name", "")
-    email = data.get("email", "")
-
-
-    if name == "":
-        errors["name"] = "Por favor ingrese un nombre"
-
-    if email == "":
-        errors["email"] = "Por favor ingrese un email"
-    elif email.count("@") == 0:
-        errors["email"] = "Por favor ingrese un email valido"
-
-    return errors
-
-
-class Provider(models.Model):
-    name = models.CharField(max_length=100)
-    email = models.EmailField()
-
-
-    @classmethod
-    def save_provider(cls, provider_data):
-        errors = validate_provider(provider_data)
-
-        if len(errors.keys()) > 0:
-            return False, errors
-
-        Provider.objects.create(
-            name=provider_data.get("name"),
-            email=provider_data.get("email"),
-        )
-
-        return True, None
-
-    def update_provider(self, provider_data):
-        self.name = provider_data.get("name", "") or self.name
-        self.email = provider_data.get("email", "") or self.email
-
-        self.save() 
