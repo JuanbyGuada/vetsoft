@@ -12,3 +12,5 @@ No valida el formato de correo si lo creas y despues lo editas
 # Relaciones
 mostrar productos en proveedor
 
+# Detalles
+Poner en navbar acceso directo a otras entidades
