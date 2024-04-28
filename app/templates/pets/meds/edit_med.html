@@ -25,6 +25,7 @@
                 required/>
         </div>
         <button type="submit" class="btn btn-primary">Actualizar Medicamento</button>
+        <a href="{% url 'pet_medicine_history' pet.id %}" class="btn btn-secondary">Cancelar</a>
     </form>
     {% if errors %}
         <div class="alert alert-danger mt-3">

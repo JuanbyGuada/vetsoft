@@ -30,6 +30,7 @@
             {% endfor %}
         </tbody>
     </table>
+    <a href="{% url 'clients_repo' %}" class="btn btn-secondary">Volver a la vista Clientes</a>
     {% else %}
     <div class="alert alert-warning" role="alert">
         No se encontraron compras para este cliente.
