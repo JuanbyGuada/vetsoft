@@ -199,6 +199,7 @@ class Pet(models.Model):
     name = models.CharField(max_length=100)
     breed = models.CharField(max_length=100)
     birthday= models.DateField()
+    vets = models.ManyToManyField("Vet")
 
     def __str__(self):
         return self.name
