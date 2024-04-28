@@ -14,20 +14,21 @@
     <table class="table">
         <thead>
             <tr>
-                <th>Nombre</th>
-                <th>descripcion</th>
-                <th>Dosis</th>
-                <th></th>
+                <th  >Nombre</th>
+                <th   >Descripción</th>
+                <th  >Dosis</th>
+                <th  > Acciones</th>
             </tr>
         </thead>
 
         <tbody>
             {% for medicine in medicines %}
             <tr>
-                    <td>{{medicine.name}}</td>
-                    <td>{{medicine.description}}</td>
-                    <td>{{medicine.dose}}</td>
-                    <td>
+                    <td  >{{medicine.name}}</td>
+                    <td   >{{medicine.description}}</td>
+                    <td  >{{medicine.dose}}</td>
+                    <td  >
+                        <div class="d-flex justify-content-center gap-2">
                         <a class="btn btn-outline-primary"
                            href="{% url 'medicines_edit' id=medicine.id %}"
                         >Editar</a>
@@ -39,11 +40,12 @@
                             <input type="hidden" name="medicine_id" value="{{ medicine.id }}" />
                             <button class="btn btn-outline-danger">Eliminar</button>
                         </form>
+                        </div>
                     </td>
             </tr>
             {% empty %}
                 <tr>
-                    <td colspan="5" class="text-center">
+                    <td colspan="5"  >
                         No existen medicamentos
                     </td>
                 </tr>

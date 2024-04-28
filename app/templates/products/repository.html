@@ -11,24 +11,24 @@
     <table class="table">
         <thead>
             <tr>
-                <th>Nombre</th>
-                <th>Tipo</th>
-                <th>Precio</th>
-                <th>Proveedor</th>
-                <th></th>
+                <th  >Nombre</th>
+                <th  >Tipo</th>
+                <th  >Precio</th>
+                <th  >Proveedor</th>
+                <th  >Acciones</th>
             </tr>
         </thead>
         <tbody>
             {% for product in products %}
             <tr>
-                <td>{{ product.name }}</td>
-                <td>{{ product.type }}</td>
-                <td>{{ product.price }}</td>
-                <td>{{ product.provider.name }}</td>
+                <td  >{{ product.name }}</td>
+                <td  >{{ product.type }}</td>
+                <td  >{{ product.price }}</td>
+                <td  >{{ product.provider.name }}</td>
 
+                <td  >
+                    <div class="d-flex justify-content-center gap-2">
 
-                
-                <td>
                     <a class="btn btn-outline-primary" href="{% url 'products_edit' id=product.id %}">Editar</a>
                     <form method="POST" action="{% url 'products_delete' %}" aria-label="Formulario de eliminación de producto">
                         {% csrf_token %}
@@ -39,7 +39,7 @@
             </tr>
             {% empty %}
                 <tr>
-                    <td colspan="4" class="text-center">No existen productos</td>
+                    <td colspan="4"  >No existen productos</td>
                 </tr>
             {% endfor %}
         </tbody>

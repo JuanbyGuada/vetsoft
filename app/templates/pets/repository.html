@@ -1,6 +1,10 @@
 {% extends 'base.html' %}
 
 {% block main %}
+
+<style>
+
+</style>
 <div class="container">
     <h1 class="mb-4">Mascotas</h1>
 
@@ -14,42 +18,48 @@
     <table class="table">
         <thead>
             <tr>
-                <th>Nombre</th>
+                <th >Nombre</th>
                 <th>Raza</th>
-                <th>Fecha de Nacimiento</th>
-                <th></th>
+                <th  >Fecha de Nacimiento</th>
+                <th  >Acciones</th>
+                <th  >Ver</th>
             </tr>
         </thead>
 
         <tbody>
             {% for pet in pets %}
             <tr>
-                <td>{{ pet.name }}</td>
-                <td>{{ pet.breed }}</td>
-                <td>{{ pet.birthday }}</td>
-                <td>
-                    <a class="btn btn-outline-primary"
+                <td  >{{ pet.name }}</td>
+                <td  >{{ pet.breed }}</td>
+                <td  >{{ pet.birthday }}</td>
+                <td  >
+                    <div class="d-flex justify-content-center gap-2">
+                    <a class="btn btn-outline-primary px-2"
                        href="{% url 'pets_edit' id=pet.id %}"
                     >Editar</a>
-                    <a class="btn btn-outline-info me-2" href="{% url 'pet_medical_history' pet_id=pet.id %}">Historial Médico</a>
-                    <a class="btn btn-outline-info me-2"
-                        href="{% url 'mascota_detalle' mascota_id=pet.id %}">Veterinarios asociados</a>
-                    <a class="btn btn-outline-info me-2"
-                        href="{% url 'pet_appointments_history' pet_id=pet.id %}">Citas detalle</a>
-                    <a class="btn btn-outline-info me-2"
-                        href="{% url 'pet_medicine_history' pet_id=pet.id %}">Medicamentos asociados</a>
                     <form method="POST"
                         action="{% url 'pets_delete' %}"
                         aria-label="Formulario de eliminación de mascota">
                         {% csrf_token %}
                         <input type="hidden" name="pet_id" value="{{ pet.id }}" />
-                        <button class="btn btn-outline-danger">Eliminar</button>
+                        <button class="btn btn-outline-danger  px-2">Eliminar</button>
                     </form>
+                </td>
+                <td  >
+                    <div class="d-flex justify-content-center gap-2">
+                   
+                    <a class="btn btn-outline-info px-1 " href="{% url 'pet_medical_history' pet_id=pet.id %}">Historial<br>Médico</a>
+                    <a class="btn btn-outline-info px-1"
+                        href="{% url 'mascota_detalle' mascota_id=pet.id %}">Veterinarios<br> asociados</a>
+                    <a class="btn btn-outline-info px-1"
+                        href="{% url 'pet_appointments_history' pet_id=pet.id %}">Citas</a>
+                    <a class="btn btn-outline-info px-1"
+                        href="{% url 'pet_medicine_history' pet_id=pet.id %}">Medicamentos<br>asociados</a>
                 </td>
             </tr>
             {% empty %}
                 <tr>
-                    <td colspan="4" class="text-center">
+                    <td colspan="4"  >
                         No existen mascotas
                     </td>
                 </tr>

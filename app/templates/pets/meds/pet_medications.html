@@ -8,12 +8,12 @@
             <i class="bi bi-plus"></i> Asociar Medicamento
         </a>
     </div>
-    <table class="table table-bordered table-hover">
-        <thead class="table-light">
+    <table class="table">
+        <thead >
             <tr>
                 <th>Medicamento</th>
                 <th>Fecha de Administración</th>
-                <th class="text-center">Acciones</th>
+                <th  >Acciones</th>
             </tr>
         </thead>
         <tbody>
@@ -21,21 +21,21 @@
             <tr>
                 <td>{{ entry.medicine.name }}</td>
                 <td>{{ entry.administration_date }}</td>
-                <td class="text-center">
+                <td  >
                     <div class="btn-group" role="group" aria-label="Acciones de Medicamento">
-                        <a href="{% url 'edit_medicine_for_pet' pet_id=pet.id med_id=entry.id %}" class="btn btn-sm btn-primary me-2">
+                        <a href="{% url 'edit_medicine_for_pet' pet_id=pet.id med_id=entry.id %}" class="btn btn-outline-primary me-2">
                            Editar
                         </a>
                         <form action="{% url 'delete_medicine_for_pet' pet.id entry.id %}" method="post" style="display: inline;">
                             {% csrf_token %}
-                            <button type="submit" class="btn btn-sm btn-danger">Eliminar</button>
+                            <button type="submit" class="btn btn-outline-danger  ">Eliminar</button>
                         </form>
                     </div>
                 </td>
             </tr>
             {% empty %}
             <tr>
-                <td colspan="3" class="text-center">No se encontraron medicamentos.</td>
+                <td colspan="3"  >No se encontraron medicamentos.</td>
             </tr>
             {% endfor %}
         </tbody>

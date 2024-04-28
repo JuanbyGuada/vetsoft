@@ -3,24 +3,25 @@
 {% block main %}
 <div class="container">
     <h1>Productos de {{ provider.name }}</h1>
+    <div style="margin-top: 24px;"></div> 
     <table class="table">
         <thead>
             <tr>
-                <th>Producto</th>
-                <th>Tipo</th>
-                <th>Precio</th>
+                <th  >Producto</th>
+                <th  >Tipo</th>
+                <th   >Precio</th>
             </tr>
         </thead>
         <tbody>
             {% for product in products %}
             <tr>
-                <td>{{ product.name }}</td>
-                <td>{{ product.type }}</td>
-                <td>${{ product.price }}</td>
+                <td  >{{ product.name }}</td>
+                <td  >{{ product.type }}</td>
+                <td   >${{ product.price }}</td>
             </tr>
             {% empty %}
             <tr>
-                <td colspan="3">No hay productos para este proveedor.</td>
+                <td   colspan="3">No hay productos para este proveedor.</td>
             </tr>
             {% endfor %}
         </tbody>
