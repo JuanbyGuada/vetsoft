@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block main %}
+<div class="container mt-5">
+    <h2 class="mb-4">Añadir compra para {{ client.name }}</h2>
+    <form method="post" class="w-50">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="product_id" class="form-label">Seleccione un producto:</label>
+            <select name="product_id" id="product_id" class="form-select">
+                {% for product in products %}
+                <option value="{{ product.id }}">{{ product.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Añadir Compra</button>
+    </form>
+    {% if error %}
+    <div class="alert alert-danger mt-3" role="alert">
+        {{ error }}
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

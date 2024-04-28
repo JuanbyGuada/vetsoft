@@ -8,6 +8,13 @@ urlpatterns = [
     path("clientes/nuevo/", view=views.clients_form, name="clients_form"),
     path("clientes/editar/<int:id>/", view=views.clients_form, name="clients_edit"),
     path("clientes/eliminar/", view=views.clients_delete, name="clients_delete"),
+    path('clientes/<int:client_id>/compras/', views.client_purchases, name='client_purchases'),
+    path('clientes/<int:client_id>/añadir-compra/', views.add_purchase, name='add_purchase'),
+
+
+    #path('clientes/<int:client_id>/compras/editar/<int:purchase_id>/', views.edit_purchase, name='edit_purchase'),
+    #path('clientes/<int:client_id>/compras/eliminar/<int:purchase_id>/', views.delete_purchase, name='delete_purchase'),
+
     #PRODUCTS
     path("productos/", view=views.products_repository, name="products_repo"),
     path("productos/nuevo/", view=views.products_form, name="products_form"),

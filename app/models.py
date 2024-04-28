@@ -168,6 +168,14 @@ class Product(models.Model):
             self.provider = Provider.objects.get(pk=provider_id)
         self.save() 
 
+#client-product (sale)
+
+class Sale(models.Model):
+    client = models.ForeignKey(Client, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+
+    class Meta:
+        unique_together = ['client', 'product'] 
 
 #  Pet Class
 
