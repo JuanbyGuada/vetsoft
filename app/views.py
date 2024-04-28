@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, reverse, get_object_or_404
-from .models import Client, Product, Pet, Vet, Medicine, Provider, Sale
+from .models import Client, Product, Pet, Vet, Medicine, Provider, Sale, PetMedicine
 
 
 def home(request):
@@ -97,7 +97,7 @@ def providers_delete(request):
 
 
 def product_list(request):
-    # Utiliza select_related para obtener los detalles del proveedor junto con cada producto
+    
     products = Product.objects.select_related('provider').all()
     return render(request, 'product_list.html', {'products': products})
 
@@ -139,10 +139,6 @@ def products_form(request, id=None):
         
         return render(request, "products/form.html", {"providers": providers})
 
-    
-        
-
-    return render(request, "products/form.html", {"product": product})
 
 
 def products_delete(request):
@@ -166,14 +162,12 @@ def add_purchase(request, client_id):
         product_id = request.POST.get('product_id')
         product = get_object_or_404(Product, id=product_id)
         
-        # Verifica si ya existe una entrada para este cliente y producto
         existing_sale = Sale.objects.filter(client=client, product=product).exists()
         
         if not existing_sale:
-            # Si no existe, crea la nueva entrada
             Sale.objects.create(client=client, product=product)
         
-        # Redirige al usuario a la página de compras del cliente
+
         return redirect('client_purchases', client_id=client.id)
     else:
         products = Product.objects.all()
@@ -317,3 +311,72 @@ def medicines_delete(request):
 
 
 
+#pet-med
+
+
+def pet_medicine_history(request, pet_id):
+    pet = get_object_or_404(Pet, id=pet_id)
+    medications = pet.medications.all()
+    return render(request, 'pets/meds/pet_medications.html', {'pet': pet, 'medications': medications})
+
+    
+def add_medicine_to_pet(request, pet_id):
+    pet = get_object_or_404(Pet, id=pet_id)
+    medicines = Medicine.objects.all()
+    if request.method == 'POST':
+        form_data = {
+            'pet_id': pet.id,
+            'medicine_id': request.POST['medicine_id'],
+            'administration_date': request.POST['administration_date']
+        }
+        success, errors = PetMedicine.save_petmed(form_data)
+        if success:
+            return redirect('pet_medicine_history', pet_id=pet.id)
+        else:
+            return render(request, 'pets/meds/add_med.html', {'pet': pet, 'medicines': medicines, 'errors': errors})
+ 
+    return render(request, 'pets/meds/add_med.html', {'pet': pet, 'medicines': medicines})
+
+
+def edit_medicine_for_pet(request, pet_id, med_id):
+    pet = get_object_or_404(Pet, id=pet_id)
+    pet_medicine = get_object_or_404(PetMedicine, id=med_id)
+    medicines = Medicine.objects.all()
+
+    if request.method == 'POST':
+        medicine_id = request.POST.get('medicine_id')
+        administration_date = request.POST.get('administration_date')
+        form_data = {
+            'medicine': medicine_id,
+            'administration_date': administration_date
+        }
+        
+        # Validar datos antes de actualizar
+        errors = PetMedicine.validate_petmed(request.POST)
+        if not errors:
+            # Llamar al método update del modelo
+            pet_medicine.update_petmed(form_data)
+            return redirect('pet_medicine_history', pet_id=pet.id)
+        else:
+            # Mostrar errores si la validación falla
+            return render(request, 'pets/meds/edit_med.html', {
+                'pet': pet,
+                'pet_medicine': pet_medicine,
+                'medicines': medicines,
+                'errors': errors
+            })
+
+    # Carga inicial del formulario de edición
+    return render(request, 'pets/meds/edit_med.html', {
+        'pet': pet,
+        'pet_medicine': pet_medicine,
+        'medicines': medicines
+    })
+
+
+
+def delete_medicine_for_pet(request, pet_id, medicine_id):
+    if request.method == 'POST':
+        pet_medicine = get_object_or_404(PetMedicine, id=medicine_id)
+        pet_medicine.delete()
+        return redirect('pet_medicine_history', pet_id=pet_id)

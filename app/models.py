@@ -329,5 +329,55 @@ class Medicine(models.Model):
         self.description = medicine_data.get("description", "") or self.description
         self.dose = medicine_data.get("dose", "") or self.dose
 
-        self.save()
+        self.save() 
 
+#Pet-Med
+
+
+class PetMedicine(models.Model):
+    pet = models.ForeignKey(Pet, on_delete=models.CASCADE, related_name='medications')
+    medicine = models.ForeignKey(Medicine, on_delete=models.CASCADE, related_name='used_on_pets')
+    administration_date = models.DateField()
+
+    def __str__(self):
+        return f"{self.medicine.name} administrado a {self.pet.name} el {self.administration_date}"
+    
+    @staticmethod
+    def validate_petmed(data):
+        errors = {}
+        administration_date = data.get("administration_date", "")
+
+        if not administration_date:
+            errors["administration_date"] = "Por favor ingrese fecha de administración"
+        else:
+            try:
+                parsed_date = datetime.strptime(administration_date, "%Y-%m-%d").date()
+                if parsed_date > datetime.now().date():
+                    errors["administration_date"] = "La fecha de administración no puede ser mayor a la fecha de hoy"
+            except ValueError:
+                errors["administration_date"] = "Formato de fecha inválido"
+        return errors
+
+    @classmethod
+    def save_petmed(cls, pet_med_data):
+        errors = cls.validate_petmed(pet_med_data)
+
+        if len(errors.keys()) > 0:
+            return False, errors
+        
+        pet = Pet.objects.get(id=pet_med_data['pet_id'])
+        medicine = Medicine.objects.get(id=pet_med_data['medicine_id'])
+
+        PetMedicine.objects.create(
+            pet=pet,
+            medicine=medicine,
+            administration_date=pet_med_data.get("administration_date"),
+        )
+        return True, None
+    
+    def update_petmed(self, pet_med_data):
+        self.administration_date = pet_med_data.get("administration_date", "")
+        if 'medicine' in pet_med_data:
+            medicine_id = pet_med_data.get("medicine")
+            self.medicine = Medicine.objects.get(pk=medicine_id)
+        self.save()

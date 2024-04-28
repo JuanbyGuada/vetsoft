@@ -8,12 +8,10 @@ urlpatterns = [
     path("clientes/nuevo/", view=views.clients_form, name="clients_form"),
     path("clientes/editar/<int:id>/", view=views.clients_form, name="clients_edit"),
     path("clientes/eliminar/", view=views.clients_delete, name="clients_delete"),
+    
+    #CLIENTS-PRODUCTS
     path('clientes/<int:client_id>/compras/', views.client_purchases, name='client_purchases'),
     path('clientes/<int:client_id>/añadir-compra/', views.add_purchase, name='add_purchase'),
-
-
-    #path('clientes/<int:client_id>/compras/editar/<int:purchase_id>/', views.edit_purchase, name='edit_purchase'),
-    #path('clientes/<int:client_id>/compras/eliminar/<int:purchase_id>/', views.delete_purchase, name='delete_purchase'),
 
     #PRODUCTS
     path("productos/", view=views.products_repository, name="products_repo"),
@@ -25,6 +23,12 @@ urlpatterns = [
     path("mascotas/nuevo/", view=views.pets_form, name="pets_form"),
     path("mascotas/editar/<int:id>/", view=views.pets_form, name="pets_edit"),
     path("mascotas/eliminar/", view=views.pets_delete, name="pets_delete"),
+    #PET-MED
+    path('pets/<int:pet_id>/medications/', views.pet_medicine_history, name='pet_medicine_history'),
+    path('pets/<int:pet_id>/add_medicine/', views.add_medicine_to_pet, name='add_medicine_to_pet'),
+    path('pets/<int:pet_id>/medications/edit/<int:med_id>/', views.edit_medicine_for_pet, name='edit_medicine_for_pet'),
+    path('pets/<int:pet_id>/medications/delete/<int:medicine_id>/', views.delete_medicine_for_pet, name='delete_medicine_for_pet'),
+
     #VETS
     path("veterinarios/", view=views.vets_repository, name="vets_repo"),
     path("veterinarios/nuevo/", view=views.vets_form, name="vets_form"),
@@ -44,6 +48,7 @@ urlpatterns = [
     path('mascota/<int:mascota_id>/', views.mascota_detalle, name='mascota_detalle'),
     path('asociar_veterinario/<int:mascota_id>/', views.asociar_veterinario, name='asociar_veterinario'),
     path('desasociar_veterinario/<int:mascota_id>/<int:veterinario_id>/', views.desasociar_veterinario, name='desasociar_veterinario'),
+
 
 ]
 
