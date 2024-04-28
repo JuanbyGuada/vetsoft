@@ -13,27 +13,40 @@
             <form class="vstack gap-3 {% if errors %}was-validated{% endif %}"
                 aria-label="Formulario de asociación de veterinario a mascota"
                 method="POST"
-                action="{% url 'asociar_veterinario' mascota_id %}"
+                action="{% url 'add_appointment_to_pet' pet.id %}"
                 novalidate>
 
                 {% csrf_token %}
 
-                <input type="hidden" value="{{ mascota.id }}" name="mascota_id" />
+                <input type="hidden" value="{{ pet.id }}" name="pet_id" />
 
                 <div>
-                    <label for="veterinario" class="form-label">Veterinario</label>
-                    <select id="veterinario" name="veterinario_id" class="form-select" required>
+                    <label for="vet" class="form-label">Veterinario</label>
+                    <select id="vet_id" name="vet_id" class="form-select" required>
                         <option value="" selected disabled>Seleccionar Veterinario</option>
-                        {% for veterinario in veterinarios %}
-                            <option value="{{ veterinario.id }}">{{ veterinario.name }}</option>
+                        {% for vet in vets %}
+                            <option value="{{ vet.id }}">{{ vet.name }}</option>
                         {% endfor %}
                     </select>
 
-                    {% if errors.veterinario_id %}
+                    {% if errors.vet_id %}
                         <div class="invalid-feedback">
-                            {{ errors.veterinario_id }}
+                            {{ errors.vet_id }}
                         </div>
                     {% endif %}
+                </div>
+                <div>
+                    <label for="date" class="form-label">Fecha de cita</label>
+                    <input type="date"
+                        id="date"
+                        name="date"
+                        class="form-control"
+                        value="{{ date }}"
+                        required/>
+                        
+                        {% if errors.date %}
+                            <div class="error">{{ errors.date }}</div>
+                        {% endif %}
                 </div>
 
                 <button class="btn btn-primary">Asociar Veterinario</button>

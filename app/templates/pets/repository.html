@@ -28,13 +28,17 @@
                 <td>{{ pet.breed }}</td>
                 <td>{{ pet.birthday }}</td>
                 <td>
+                    <a class="btn btn-outline-primary" href="{% url 'pet_medical_history' pet_id=pet.id %}">Historial Médico</a>
+
                     <a class="btn btn-outline-primary"
                        href="{% url 'pets_edit' id=pet.id %}"
                     >Editar</a>
                     <a class="btn btn-outline-primary"
-                        href="{% url 'mascota_detalle' mascota_id=pet.id %}">Ver veterinarios</a>
+                        href="{% url 'mascota_detalle' mascota_id=pet.id %}"> Veterinarios</a>
                     <a class="btn btn-outline-primary"
-                        href="{% url 'pet_medicine_history' pet_id=pet.id %}">Ver historial medicinas</a>
+                        href="{% url 'pet_appointments_history' pet_id=pet.id %}"> Citas</a>
+                    <a class="btn btn-outline-primary"
+                        href="{% url 'pet_medicine_history' pet_id=pet.id %}">Medicamentos</a>
                     <form method="POST"
                         action="{% url 'pets_delete' %}"
                         aria-label="Formulario de eliminación de mascota">

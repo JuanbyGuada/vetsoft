@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, reverse, get_object_or_404
-from .models import Client, Product, Pet, Vet, Medicine, Provider, Sale, PetMedicine
+from .models import Client, Product, Pet, Vet, Medicine, Provider, Sale, PetMedicine, Appointment
 
 
 def home(request):
@@ -209,28 +209,6 @@ def pets_delete(request):
 
     return redirect(reverse("pets_repo"))
 
-def mascota_detalle(request, mascota_id):
-    mascota = get_object_or_404(Pet, pk=mascota_id)
-    veterinarios = mascota.vets.all()
-    return render(request, 'pet-vet/mascota_detalle.html', {'mascota': mascota, 'veterinarios': veterinarios})
-
-def asociar_veterinario(request, mascota_id):
-    if request.method == 'POST':
-        veterinario_id = request.POST.get('veterinario_id')
-        mascota = get_object_or_404(Pet, pk=mascota_id)
-        veterinario = get_object_or_404(Vet, pk=veterinario_id)
-        mascota.vets.add(veterinario)
-        return redirect('mascota_detalle', mascota_id=mascota_id)
-    else:
-        veterinarios = Vet.objects.all()
-        return render(request, 'pet-vet/asociar_veterinario.html', {'veterinarios': veterinarios, 'mascota_id': mascota_id})
-    
-def desasociar_veterinario(request, mascota_id, veterinario_id):
-    mascota = get_object_or_404(Pet, pk=mascota_id)
-    veterinario = get_object_or_404(Vet, pk=veterinario_id)
-    mascota.vets.remove(veterinario)
-    return redirect('mascota_detalle', mascota_id=mascota_id)
-
 # vet
 
 def vets_repository(request):
@@ -268,6 +246,53 @@ def vets_delete(request):
     vet.delete()
 
     return redirect(reverse("vets_repo"))
+
+
+
+#pet-vet(cita)
+
+
+def pet_appointments_history(request, pet_id):
+    pet = get_object_or_404(Pet, id=pet_id)
+    appointments = pet.appointments.all()
+    return render(request, 'pet-vet/citas.html', {'pet': pet, 'appointments': appointments})
+
+def add_appointment_to_pet(request, pet_id):
+    pet = get_object_or_404(Pet, id=pet_id)
+    vets = Vet.objects.all()
+    if request.method == 'POST':
+        form_data = {
+            'pet': pet.id,
+            'vet': request.POST['vet_id'],
+            'date': request.POST['date']
+        }
+        success, errors = Appointment.save_appointment(form_data)
+        if success:
+            return redirect('pet_appointments_history', pet_id=pet.id)
+        else:
+            return render(request, 'pet-vet/asociar_veterinario.html', {
+                'pet': pet, 
+                'vets': vets, 
+                'errors': errors
+            })
+
+    return render(request, 'pet-vet/asociar_veterinario.html', {'pet': pet, 'vets': vets})
+
+
+
+
+def delete_appointment(request, appointment_id):
+    if request.method == 'POST':
+        appointment = get_object_or_404(Appointment, id=appointment_id)
+        appointment.delete()
+        return redirect('pet_appointments_history', pet_id=appointment.pet.id)
+
+
+def mascota_detalle(request, mascota_id):
+    mascota = get_object_or_404(Pet, pk=mascota_id)
+    veterinarios = Vet.objects.filter(appointments__pet=mascota).distinct()
+    return render(request, 'pet-vet/mascota_detalle.html', {'mascota': mascota, 'veterinarios': veterinarios})
+
 
 #medicine
 def medicines_repository(request):
@@ -373,3 +398,39 @@ def delete_medicine_for_pet(request, pet_id, medicine_id):
         pet_medicine = get_object_or_404(PetMedicine, id=medicine_id)
         pet_medicine.delete()
         return redirect('pet_medicine_history', pet_id=pet_id)
+    
+    #historial medico
+
+def pet_medical_history(request, pet_id):
+    pet = get_object_or_404(Pet, pk=pet_id)
+    appointments = pet.appointments.all().order_by('date')
+    medications = pet.medications.all().order_by('administration_date')
+
+    events = []
+
+    # Agregamos citas
+    for appointment in appointments:
+        events.append({
+            'date': appointment.date,
+            'vet': appointment.vet.name,
+            'medication': None  # Inicialmente no hay medicamento asociado
+        })
+
+    # Agregamos medicamentos
+    for medication in medications:
+        matched = False
+        for event in events:
+            if event['date'] == medication.administration_date and not event['medication']:
+                event['medication'] = f" {medication.medicine.name}"
+                matched = True
+                break
+        if not matched:
+            events.append({
+                'date': medication.administration_date,
+                'vet': None, 
+                'medication': f" {medication.medicine.name}"
+            })
+
+    events.sort(key=lambda x: x['date'])
+
+    return render(request, 'pets/medical_history.html', {'pet': pet, 'events': events})

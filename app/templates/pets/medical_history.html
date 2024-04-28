@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block main %}
+<div class="container">
+    <h1>Historial Médico de {{ pet.name }}</h1>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Fecha</th>
+                <th>Veterinario</th>
+                <th>Medicamento</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for event in events %}
+            <tr>
+                <td>{{ event.date }}</td>
+                <td>{{ event.vet|default:"N/A" }}</td>
+                <td>{{ event.medication|default:"N/A" }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="3">No hay eventos registrados.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

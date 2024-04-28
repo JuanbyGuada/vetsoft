@@ -23,6 +23,8 @@ urlpatterns = [
     path("mascotas/nuevo/", view=views.pets_form, name="pets_form"),
     path("mascotas/editar/<int:id>/", view=views.pets_form, name="pets_edit"),
     path("mascotas/eliminar/", view=views.pets_delete, name="pets_delete"),
+    path('mascota/<int:pet_id>/historial_medico/', views.pet_medical_history, name='pet_medical_history'),
+
     #PET-MED
     path('pets/<int:pet_id>/medications/', views.pet_medicine_history, name='pet_medicine_history'),
     path('pets/<int:pet_id>/add_medicine/', views.add_medicine_to_pet, name='add_medicine_to_pet'),
@@ -47,9 +49,12 @@ urlpatterns = [
     path('proveedores/<int:provider_id>/productos/', views.provider_products, name='provider_products'),
 
     #PET_VET
-    path('mascota/<int:mascota_id>/', views.mascota_detalle, name='mascota_detalle'),
-    path('asociar_veterinario/<int:mascota_id>/', views.asociar_veterinario, name='asociar_veterinario'),
-    path('desasociar_veterinario/<int:mascota_id>/<int:veterinario_id>/', views.desasociar_veterinario, name='desasociar_veterinario'),
+    path('mascota/<int:mascota_id>/Veterinarios', views.mascota_detalle, name='mascota_detalle'),
+    path('mascota/<int:pet_id>/citas/', views.pet_appointments_history, name='pet_appointments_history'),
+    path('mascota/<int:pet_id>/add_cita/', views.add_appointment_to_pet, name='add_appointment_to_pet'),
+    path('cita/eliminar/<int:appointment_id>/', views.delete_appointment, name='delete_appointment'),
+
+
 
 
 ]

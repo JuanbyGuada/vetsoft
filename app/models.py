@@ -175,60 +175,6 @@ class Sale(models.Model):
     class Meta:
         unique_together = ['client', 'product'] 
 
-#  Pet Class
-
-def validate_pet(data):
-    errors = {}
-
-    name = data.get("name", "")
-    breed = data.get("breed", "")
-    birthday = data.get("birthday", "")
-
-    if name == "":
-        errors["name"] = "Por favor ingrese un nombre"
-
-    if breed == "":
-        errors["breed"] = "Por favor ingrese una raza"
-
-    if birthday == "":
-        errors["birthday"] = "Por favor ingrese fecha de nacimiento"
-    else:
-            birthday_date = datetime.strptime(birthday, "%Y-%m-%d").date()
-            today = datetime.now().date()
-            if birthday_date > today:
-                errors["birthday"] = "La fecha de nacimiento no puede ser mayor a la fecha de hoy"
-
-    return errors
-
-class Pet(models.Model):
-    name = models.CharField(max_length=100)
-    breed = models.CharField(max_length=100)
-    birthday= models.DateField()
-    vets = models.ManyToManyField("Vet")
-
-    def __str__(self):
-        return self.name
-    
-    @classmethod
-    def save_pet(cls, pet_data):
-        errors = validate_pet(pet_data)
-
-        if len(errors.keys()) > 0:
-            return False, errors
-
-        Pet.objects.create(
-            name=pet_data.get("name"),
-            breed=pet_data.get("breed"),
-            birthday=pet_data.get("birthday"),
-        )
-        return True, None
-    
-    def update_pet(self, pet_data):
-        self.name = pet_data.get("name", "") or self.name
-        self.breed = pet_data.get("breed", "") or self.breed
-        self.birthday = pet_data.get("birthday", "") or self.birthday
-
-        self.save()
 
 #  Vet Class
 
@@ -331,6 +277,108 @@ class Medicine(models.Model):
 
         self.save() 
 
+        
+#  Pet Class
+
+def validate_pet(data):
+    errors = {}
+
+    name = data.get("name", "")
+    breed = data.get("breed", "")
+    birthday = data.get("birthday", "")
+
+    if name == "":
+        errors["name"] = "Por favor ingrese un nombre"
+
+    if breed == "":
+        errors["breed"] = "Por favor ingrese una raza"
+
+    if birthday == "":
+        errors["birthday"] = "Por favor ingrese fecha de nacimiento"
+    else:
+            birthday_date = datetime.strptime(birthday, "%Y-%m-%d").date()
+            today = datetime.now().date()
+            if birthday_date > today:
+                errors["birthday"] = "La fecha de nacimiento no puede ser mayor a la fecha de hoy"
+
+    return errors
+
+class Pet(models.Model):
+    name = models.CharField(max_length=100)
+    breed = models.CharField(max_length=100)
+    birthday= models.DateField()
+
+    def __str__(self):
+        return self.name
+    
+    @classmethod
+    def save_pet(cls, pet_data):
+        errors = validate_pet(pet_data)
+
+        if len(errors.keys()) > 0:
+            return False, errors
+
+        Pet.objects.create(
+            name=pet_data.get("name"),
+            breed=pet_data.get("breed"),
+            birthday=pet_data.get("birthday"),
+        )
+        return True, None
+    
+    def update_pet(self, pet_data):
+        self.name = pet_data.get("name", "") or self.name
+        self.breed = pet_data.get("breed", "") or self.breed
+        self.birthday = pet_data.get("birthday", "") or self.birthday
+
+        self.save()
+
+        
+#Vet-Pet
+class Appointment(models.Model):
+    pet = models.ForeignKey(Pet, on_delete=models.CASCADE, related_name='appointments')
+    vet = models.ForeignKey(Vet, on_delete=models.CASCADE, related_name='appointments')
+    date = models.DateField()
+
+    def __str__(self):
+        return f"Cita para {self.pet.name} con {self.vet.name} el {self.date}"
+    
+    @staticmethod
+    def validate_petvet(data):
+        errors = {}
+        date = data.get("date", "")
+        if not date:
+            errors["date"] = "Por favor ingrese fecha de cita"
+        else:
+            try:
+                parsed_date = datetime.strptime(date, "%Y-%m-%d").date()
+                if parsed_date > datetime.now().date():
+                    errors["date"] = "La fecha de cita no puede ser mayor a la fecha de hoy"
+            except ValueError:
+                errors["date"] = "Formato de fecha inválido"
+        return errors
+
+    @classmethod
+    def save_appointment(cls, pet_vet_data):
+        errors = cls.validate_petvet(pet_vet_data)
+        if len(errors.keys()) > 0:
+            return False, errors
+        
+        if Appointment.objects.filter(pet_id=pet_vet_data['pet'], vet_id=pet_vet_data['vet'], date=pet_vet_data['date']).exists():
+            errors['duplicate'] = "Ya existe una cita con estos datos."
+            return False, errors
+
+        pet = Pet.objects.get(id=pet_vet_data['pet'])
+        vet = Vet.objects.get(id=pet_vet_data['vet'])
+        appointment = cls.objects.create(
+            pet=pet,
+            vet=vet,
+            date=pet_vet_data['date']
+        )
+        return True, None
+
+
+
+
 #Pet-Med
 
 
@@ -341,6 +389,8 @@ class PetMedicine(models.Model):
 
     def __str__(self):
         return f"{self.medicine.name} administrado a {self.pet.name} el {self.administration_date}"
+    
+    
     
     @staticmethod
     def validate_petmed(data):

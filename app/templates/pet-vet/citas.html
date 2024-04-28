@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block main %}
+<div class="container">
+    <h1 class="mb-4">Citas asociadas a {{ pet.name }}</h1>
+    <div class="mb-2">
+        <a href="{% url 'add_appointment_to_pet' pet.id %}" class="btn btn-primary">
+            <i class="bi bi-plus"></i> Nueva Cita
+        </a>
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Email</th>
+                <th>Telefono</th>
+                <th>Fecha</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for appointment in appointments %}
+            <tr>
+                <td>{{ appointment.vet.name }}</td>
+                <td>{{ appointment.vet.email }}</td>
+                <td>{{ appointment.vet.phone }}</td>
+                <td>{{ appointment.date}}</td>
+                <td>
+                    <form action="{% url 'delete_appointment' appointment.id %}" method="post">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">
+                            <i class="bi bi-trash"></i> Eliminar
+                        </button>
+                    </form>
+                 </td>
+            </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="4" class="text-center">No existen veterinarios asociados a esta mascota</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
