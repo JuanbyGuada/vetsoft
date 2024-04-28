@@ -6,45 +6,45 @@
 
     <div class="mb-2">
         <a href="{% url 'providers_form' %}" class="btn btn-primary">
-            <i class="bi bi-plus"></i>
-            Nuevo Proveedor
+            <i class="bi bi-plus"></i> Nuevo Proveedor
         </a>
     </div>
 
     <table class="table">
         <thead>
             <tr>
-                <th>Nombre</th>
-                <th>Email</th>
-                <th></th>
+                <th class="text-center" >Nombre</th>
+                <th class="text-center">Email</th>
+                <th class="text-center">Acciones</th>
             </tr>
         </thead>
 
         <tbody>
             {% for provider in providers %}
             <tr>
-                    <td>{{provider.name}}</td>
-                    <td>{{provider.email}}</td>
-                    <td>
-                        <a class="btn btn-outline-primary"
-                           href="{% url 'providers_edit' id=provider.id %}"
-                        >Editar</a>
-                        <form method="POST"
-                            action="{% url 'providers_delete' %}"
-                            aria-label="Formulario de eliminación de proveedor">
+                <td>{{ provider.name }}</td>
+                <td>{{ provider.email }}</td>
+                <td class="text-center">
+                    <div class="d-flex justify-content-center">
+                
+                        <a href="{% url 'providers_edit' id=provider.id %}" class="btn btn-outline-primary me-2">
+                            Editar
+                        </a>
+ 
+                        <a href="{% url 'provider_products' provider.id %}" class="btn btn-outline-primary me-2">Ver Productos</a>
+                 
+                        <form method="POST" action="{% url 'providers_delete' %}" class="d-inline">
                             {% csrf_token %}
-
-                            <input type="hidden" name="provider_id" value="{{ provider.id }}" />
-                            <button class="btn btn-outline-danger">Eliminar</button>
+                            <input type="hidden" name="provider_id" value="{{ provider.id }}">
+                            <button type="submit" class="btn btn-outline-danger">Eliminar</button>
                         </form>
-                    </td>
+                    </div>
+                </td>
             </tr>
             {% empty %}
-                <tr>
-                    <td colspan="5" class="text-center">
-                        No existen Proveedores
-                    </td>
-                </tr>
+            <tr>
+                <td colspan="3" class="text-center">No existen Proveedores</td>
+            </tr>
             {% endfor %}
         </tbody>
     </table>

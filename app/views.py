@@ -79,9 +79,9 @@ def providers_form(request, id=None):
     return render(request, "providers/form.html", {"provider": provider})
 
 def provider_products(request, provider_id):
-    provider = Provider.objects.get(pk=provider_id)
-    products = provider.products.all()
-    return render(request, 'provider_products.html', {'provider': provider, 'products': products})
+    provider = get_object_or_404(Provider, pk=provider_id)
+    products = Product.objects.filter(provider=provider)
+    return render(request, 'providers/products.html', {'provider': provider, 'products': products})
 
 
 def providers_delete(request):
@@ -96,15 +96,9 @@ def providers_delete(request):
 #product
 
 
-def product_list(request):
-    
-    products = Product.objects.select_related('provider').all()
-    return render(request, 'product_list.html', {'products': products})
-
 def products_repository(request):
     products = Product.objects.all()
     return render(request, "products/repository.html", {"products": products})
-
 
 
 def products_form(request, id=None):
@@ -147,6 +141,9 @@ def products_delete(request):
     product.delete()
 
     return redirect(reverse("products_repo"))
+
+
+
 
 #sale
 
@@ -351,14 +348,11 @@ def edit_medicine_for_pet(request, pet_id, med_id):
             'administration_date': administration_date
         }
         
-        # Validar datos antes de actualizar
         errors = PetMedicine.validate_petmed(request.POST)
         if not errors:
-            # Llamar al método update del modelo
             pet_medicine.update_petmed(form_data)
             return redirect('pet_medicine_history', pet_id=pet.id)
         else:
-            # Mostrar errores si la validación falla
             return render(request, 'pets/meds/edit_med.html', {
                 'pet': pet,
                 'pet_medicine': pet_medicine,
@@ -366,7 +360,6 @@ def edit_medicine_for_pet(request, pet_id, med_id):
                 'errors': errors
             })
 
-    # Carga inicial del formulario de edición
     return render(request, 'pets/meds/edit_med.html', {
         'pet': pet,
         'pet_medicine': pet_medicine,

@@ -44,6 +44,8 @@ urlpatterns = [
     path("proveedores/nuevo/", view=views.providers_form, name="providers_form"),
     path("proveedores/editar/<int:id>/", view=views.providers_form, name="providers_edit"),
     path("proveedores/eliminar/", view=views.providers_delete, name="providers_delete"),
+    path('proveedores/<int:provider_id>/productos/', views.provider_products, name='provider_products'),
+
     #PET_VET
     path('mascota/<int:mascota_id>/', views.mascota_detalle, name='mascota_detalle'),
     path('asociar_veterinario/<int:mascota_id>/', views.asociar_veterinario, name='asociar_veterinario'),
