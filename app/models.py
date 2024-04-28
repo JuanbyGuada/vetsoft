@@ -1,8 +1,6 @@
 from django.db import models
 from datetime import datetime
 
-#debo editar el proveedor para que seleccione sus productos o no. Tal vez eso puede ser extra
-#importante : seleccionar el proveedor desde una lista
 
 
 def validate_client(data):
@@ -146,7 +144,7 @@ class Product(models.Model):
         if len(errors.keys()) > 0:
             return False, errors
         
-        provider_id = product_data.get("provider")  # Asumiendo que 'provider' es la clave en product_data donde se almacena el ID del proveedor
+        provider_id = product_data.get("provider")
         provider = Provider.objects.get(pk=provider_id) 
 
         Product.objects.create(
@@ -195,7 +193,6 @@ def validate_pet(data):
     if birthday == "":
         errors["birthday"] = "Por favor ingrese fecha de nacimiento"
     else:
-            # Convierte la cadena de fecha a un objeto date
             birthday_date = datetime.strptime(birthday, "%Y-%m-%d").date()
             today = datetime.now().date()
             if birthday_date > today:

@@ -6,46 +6,48 @@
 
     <div class="mb-2">
         <a href="{% url 'clients_form' %}" class="btn btn-primary">
-            <i class="bi bi-plus"></i>
-            Nuevo Cliente
+            <i class="bi bi-plus"></i> Nuevo Cliente
         </a>
     </div>
 
     <table class="table">
         <thead>
             <tr>
-                <th>Nombre</th>
-                <th>Teléfono</th>
-                <th>Email</th>
-                <th>Dirección</th>
-                <th>Acciones</th>
-                <th></th>
+                <th class="text-center">Nombre</th>
+                <th class="text-center">Teléfono</th>
+                <th class="text-center">Email</th>
+                <th class="text-center">Dirección</th>
+                <th class="text-center">Acciones</th>
             </tr>
         </thead>
 
         <tbody>
             {% for client in clients %}
             <tr>
-                    <td>{{client.name}}</td>
-                    <td>{{client.phone}}</td>
-                    <td>{{client.email}}</td>
-                    <td>{{client.address}}</td>
-                    <td>
-                        <a class="btn btn-outline-primary"
-                           href="{% url 'clients_edit' id=client.id %}"
-                        >Editar</a>
+                    <td class="text-center">{{client.name}}</td>
+                    <td class="text-center">{{client.phone}}</td>
+                    <td class="text-center">{{client.email}}</td>
+                    <td class="text-center">{{client.address}}</td>
+                    <td class="text-center">
+                        <div class="d-flex justify-content-center">
+                            <a class="btn btn-outline-primary me-2"
+                               href="{% url 'clients_edit' id=client.id %}"
+                            >Editar</a>
 
-                        <a class="btn btn-outline-info"
-                           href="{% url 'client_purchases' client_id=client.id %}"
-                        >Compras</a>
-                        <form method="POST"
-                            action="{% url 'clients_delete' %}"
-                            aria-label="Formulario de eliminación de cliente">
-                            {% csrf_token %}
+                            <a class="btn btn-outline-info me-2"
+                               href="{% url 'client_purchases' client_id=client.id %}"
+                            >Ver Compras</a>
 
-                            <input type="hidden" name="client_id" value="{{ client.id }}" />
-                            <button class="btn btn-outline-danger">Eliminar</button>
-                        </form>
+                            <form method="POST"
+                                action="{% url 'clients_delete' %}"
+                                aria-label="Formulario de eliminación de cliente"
+                                class="d-inline">
+                                {% csrf_token %}
+
+                                <input type="hidden" name="client_id" value="{{ client.id }}" />
+                                <button class="btn btn-outline-danger">Eliminar</button>
+                            </form>
+                        </div>
                     </td>
             </tr>
             {% empty %}
