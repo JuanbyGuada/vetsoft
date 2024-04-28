@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, reverse, get_object_or_404
-from .models import Client, Product, Pet, Vet, Medicine, Provider
+from .models import Client, Product, Pet, Vet, Medicine, Provider, Sale
 
 
 def home(request):
@@ -152,6 +152,33 @@ def products_delete(request):
 
     return redirect(reverse("products_repo"))
 
+#sale
+
+def client_purchases(request, client_id):
+    client = get_object_or_404(Client, id=client_id)
+    purchases = Sale.objects.filter(client=client)
+    return render(request, 'clients/products/client_purchases.html', {'client': client, 'purchases': purchases})
+
+
+def add_purchase(request, client_id):
+    client = get_object_or_404(Client, id=client_id)
+    if request.method == 'POST':
+        product_id = request.POST.get('product_id')
+        product = get_object_or_404(Product, id=product_id)
+        
+        # Verifica si ya existe una entrada para este cliente y producto
+        existing_sale = Sale.objects.filter(client=client, product=product).exists()
+        
+        if not existing_sale:
+            # Si no existe, crea la nueva entrada
+            Sale.objects.create(client=client, product=product)
+        
+        # Redirige al usuario a la página de compras del cliente
+        return redirect('client_purchases', client_id=client.id)
+    else:
+        products = Product.objects.all()
+        return render(request, 'clients/products/addproduct.html', {'products': products, 'client': client})
+    
 #pet
 
 def pets_repository(request):
