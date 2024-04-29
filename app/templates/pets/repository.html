@@ -41,8 +41,9 @@
                         <input type="hidden" name="pet_id" value="{{ pet.id }}" />
                         <button class="btn btn-outline-danger  px-2">Eliminar</button>
                     </form>
-                    <a class="btn btn-outline-primary px-2"
-                        href="{% url 'pets_edit' pet.id %}">Editar</a>
+                        <a class="btn btn-outline-primary px-2" 
+                        href="{% url 'pets_edit' pet.id %}?return_url={{ request.build_absolute_uri }}">
+                        Editar Mascota</a>
                 </td>
             </tr>
             {% empty %}

@@ -14,20 +14,19 @@
 
     <div class="row">
         <div class="col-lg-6 offset-lg-3">
-            <form class="vstack gap-3 {% if errors %}was-validated{% endif %}"
+            <form id="petForm" class="vstack gap-3 {% if errors %}was-validated{% endif %}"
                 aria-label="Formulario de creación de mascota"
                 method="POST"
                 action="{% url 'pets_form' %}"
                 novalidate>
 
                 {% csrf_token %}
+                <input type="hidden" name="return_url" value="{{ return_url }}">
 
                 <input type="hidden" value="{{ pet.id }}" name="id" />
 
                 <div>
-                    <div>
-                        {% if pet.client %}
-                        {% else %}
+                    {% if not pet.client %}
                         <label for="client" class="form-label">Dueño</label>
                             <select id="client" name="client" class="form-select" required>
                                 <option value="" selected disabled>Seleccionar Cliente</option>
@@ -35,15 +34,12 @@
                                     <option value="{{ client.id }}">{{ client.name }}</option>
                                 {% endfor %}
                             </select>
-                        {% endif %}
-                    
                         {% if errors.client_id %}
                             <div class="invalid-feedback">
                                 {{ errors.client_id }}
                             </div>
                         {% endif %}
-                    </div>
-
+                    {% endif %}
                     <label for="name" class="form-label">Nombre</label>
                     
                     <input type="text"
@@ -75,12 +71,13 @@
                     {% endif %}
                 </div>
                 <div>
+
                     <label for="birthday" class="form-label">Fecha de Nacimiento</label>
                     <input type="date"
                         id="birthday"
                         name="birthday"
                         class="form-control"
-                        value="{{ pet.birthday }}"
+                        value="{{ pet.birthday|date:'Y-m-d' }}"
                         required/>
                         
                         {% if errors.birthday %}
@@ -88,10 +85,25 @@
                         {% endif %}
                 </div>
 
-                <button class="btn btn-primary">Guardar</button>
-                <a href="{% url 'pets_repo' %}" class="btn btn-secondary">Cancelar</a>
+                <button type="submit" class="btn btn-primary" id="saveButton">Guardar</button>
+                <a href="{{ return_url }}" class="btn btn-secondary">Cancelar</a>
             </form>
         </div>
     </div>
 </div>
+<script>
+document.getElementById('petForm').addEventListener('input', function() {
+    var name = document.getElementById('name').value;
+    var breed = document.getElementById('breed').value;
+    var birthday = document.getElementById('birthday').value;
+    var client = document.getElementById('client') ? document.getElementById('client').value : 'set';
+    
+    var today = new Date();
+    var birthDate = new Date(birthday);
+    var isValidBirthday = birthday && birthDate < today; 
+
+    var allFilled = name && breed && client && isValidBirthday; 
+    document.getElementById('saveButton').disabled = !allFilled;
+});
+</script>
 {% endblock %}

@@ -1,4 +1,5 @@
 from django.shortcuts import render, redirect, reverse, get_object_or_404
+from django.http import HttpResponseRedirect
 from .models import Client, Product, Pet, Vet, Medicine, Provider, Sale, PetMedicine, Appointment
 
 
@@ -178,7 +179,10 @@ def pets_repository(request):
 
 def pets_form(request, id=None):
     clients = Client.objects.all()
+    return_url = request.GET.get('return_url') or request.META.get('HTTP_REFERER')
+
     if request.method == "POST":
+        return_url = request.POST.get('return_url', request.GET.get('return_url', request.META.get('HTTP_REFERER')))
         pet_id = request.POST.get("id", "")
         errors = {}
         saved = True
@@ -193,17 +197,18 @@ def pets_form(request, id=None):
             pet.update_pet(request.POST)
 
         if saved:
-            return redirect(reverse("pets_repo"))
-
+            return HttpResponseRedirect(return_url) 
+   
         return render(
-            request, "pets/form.html", {"errors": errors, "pet": request.POST, "clients": clients}
+            request, "pets/form.html", {"errors": errors, "pet": request.POST, "clients": clients , "return_url": return_url}
         )
+
 
     pet = None
     if id is not None:
         pet = get_object_or_404(Pet, pk=id)
 
-    return render(request, "pets/form.html", {"pet": pet, "clients": clients})
+    return render(request, "pets/form.html", {"pet": pet, "clients": clients, "return_url": return_url})
 
 
 

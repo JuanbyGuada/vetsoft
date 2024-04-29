@@ -294,13 +294,8 @@ def validate_pet(data):
         errors["breed"] = "Por favor ingrese una raza"
 
     if birthday == "":
-        errors["birthday"] = "Por favor ingrese fecha de nacimiento"
-    else:
-            birthday_date = datetime.strptime(birthday, "%Y-%m-%d").date()
-            today = datetime.now().date()
-            if birthday_date > today:
-                errors["birthday"] = "La fecha de nacimiento no puede ser mayor a la fecha de hoy"
-
+        errors["birthday"] = "Por favor ingrese una fecha de nacimiento válida"
+    
     return errors
 
 class Pet(models.Model):
