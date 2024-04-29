@@ -6,22 +6,16 @@
 
 </style>
 <div class="container">
-    <h1 class="mb-4">Mascotas</h1>
-
-    <div class="mb-2">
-        <a href="{% url 'pets_form' %}" class="btn btn-primary">
-            <i class="bi bi-plus"></i> Nueva Mascota
-        </a>
-    </div>
+    <h1 class="mb-4">Mascotas de {{ client.name }}</h1>
 
     <table class="table">
         <thead>
             <tr>
                 <th >Nombre</th>
                 <th>Raza</th>
-                <th>Dueño</th>
                 <th  >Fecha de Nacimiento</th>
                 <th  >Acciones</th>
+                <th  >Ver</th>
             </tr>
         </thead>
 
@@ -30,7 +24,6 @@
             <tr>
                 <td  >{{ pet.name }}</td>
                 <td  >{{ pet.breed }}</td>
-                <td  >{{ pet.client }}</td>
                 <td  >{{ pet.birthday }}</td>
                 <td  >
                     <div class="d-flex justify-content-center gap-2">
@@ -42,7 +35,17 @@
                         <button class="btn btn-outline-danger  px-2">Eliminar</button>
                     </form>
                     <a class="btn btn-outline-primary px-2"
-                        href="{% url 'pets_edit' pet.id %}">Editar</a>
+                        href="{% url 'pets_edit' pet.id %}">Editar</a>                    
+                </td>
+                <td  >
+                    <div class="d-flex justify-content-center gap-2">
+                    <a class="btn btn-outline-info px-1 " href="{% url 'pet_medical_history' pet_id=pet.id %}">Historial<br>Médico</a>
+                    <a class="btn btn-outline-info px-1"
+                        href="{% url 'mascota_detalle' mascota_id=pet.id %}">Veterinarios<br> asociados</a>
+                    <a class="btn btn-outline-info px-1"
+                        href="{% url 'pet_appointments_history' pet_id=pet.id %}">Citas</a>
+                    <a class="btn btn-outline-info px-1"
+                        href="{% url 'pet_medicine_history' pet_id=pet.id %}">Medicamentos<br>asociados</a>
                 </td>
             </tr>
             {% empty %}
@@ -54,6 +57,6 @@
             {% endfor %}
         </tbody>
     </table>
-    <a href="{% url 'home' %}" class="btn btn-secondary">Volver al home</a>
+    <a href="{% url 'clients_repo' %}" class="btn btn-secondary">Volver a la vista Clientes</a>
 </div>
 {% endblock %}

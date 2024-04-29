@@ -177,12 +177,16 @@ def pets_repository(request):
     return render(request, "pets/repository.html", {"pets": pets})
 
 def pets_form(request, id=None):
+    clients = Client.objects.all()
     if request.method == "POST":
         pet_id = request.POST.get("id", "")
         errors = {}
         saved = True
 
         if pet_id == "":
+            client_id = request.POST.get("client_id", "")
+            if client_id:
+                request.POST["client_id"] = int(client_id)
             saved, errors = Pet.save_pet(request.POST)
         else:
             pet = get_object_or_404(Pet, pk=pet_id)
@@ -192,14 +196,15 @@ def pets_form(request, id=None):
             return redirect(reverse("pets_repo"))
 
         return render(
-            request, "pets/form.html", {"errors": errors, "pet": request.POST}
+            request, "pets/form.html", {"errors": errors, "pet": request.POST, "clients": clients}
         )
 
     pet = None
     if id is not None:
         pet = get_object_or_404(Pet, pk=id)
 
-    return render(request, "pets/form.html", {"pet": pet})
+    return render(request, "pets/form.html", {"pet": pet, "clients": clients})
+
 
 
 def pets_delete(request):
@@ -292,6 +297,13 @@ def mascota_detalle(request, mascota_id):
     mascota = get_object_or_404(Pet, pk=mascota_id)
     veterinarios = Vet.objects.filter(appointments__pet=mascota).distinct()
     return render(request, 'pet-vet/mascota_detalle.html', {'mascota': mascota, 'veterinarios': veterinarios})
+
+#client-pet
+
+def client_pets(request, client_id):
+    client = get_object_or_404(Client, id=client_id)
+    pets = client.pets.all()
+    return render(request, 'clients/pets/repository.html', {'client': client, 'pets': pets})
 
 
 #medicine

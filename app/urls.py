@@ -13,11 +13,15 @@ urlpatterns = [
     path('clientes/<int:client_id>/compras/', views.client_purchases, name='client_purchases'),
     path('clientes/<int:client_id>/añadir-compra/', views.add_purchase, name='add_purchase'),
 
+    #CLIENTS-PETS
+    path("clientes/<int:client_id>/mascotas/", views.client_pets, name='client_pets'),
+
     #PRODUCTS
     path("productos/", view=views.products_repository, name="products_repo"),
     path("productos/nuevo/", view=views.products_form, name="products_form"),
     path("productos/editar/<int:id>/", view=views.products_form, name="products_edit"),
     path("productos/eliminar/", view=views.products_delete, name="products_delete"),
+
     #PETS
     path("mascotas/", view=views.pets_repository, name="pets_repo"),
     path("mascotas/nuevo/", view=views.pets_form, name="pets_form"),

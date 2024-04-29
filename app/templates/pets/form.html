@@ -4,7 +4,11 @@
 <div class="container">
     <div class="row">
         <div class="col-lg-6 offset-lg-3">
-            <h1>Nueva Mascota</h1>
+            {% if pet.client %}
+                <h1>Editar Mascota de {{ pet.client }}</h1>
+            {% else %}
+                <h1>Nueva Mascota</h1>
+            {% endif %}
         </div>
     </div>
 
@@ -21,7 +25,27 @@
                 <input type="hidden" value="{{ pet.id }}" name="id" />
 
                 <div>
+                    <div>
+                        {% if pet.client %}
+                        {% else %}
+                        <label for="client" class="form-label">Dueño</label>
+                            <select id="client" name="client" class="form-select" required>
+                                <option value="" selected disabled>Seleccionar Cliente</option>
+                                {% for client in clients %}
+                                    <option value="{{ client.id }}">{{ client.name }}</option>
+                                {% endfor %}
+                            </select>
+                        {% endif %}
+                    
+                        {% if errors.client_id %}
+                            <div class="invalid-feedback">
+                                {{ errors.client_id }}
+                            </div>
+                        {% endif %}
+                    </div>
+
                     <label for="name" class="form-label">Nombre</label>
+                    
                     <input type="text"
                         id="name"
                         name="name"

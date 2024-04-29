@@ -307,6 +307,7 @@ class Pet(models.Model):
     name = models.CharField(max_length=100)
     breed = models.CharField(max_length=100)
     birthday= models.DateField()
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='pets')
 
     def __str__(self):
         return self.name
@@ -322,6 +323,7 @@ class Pet(models.Model):
             name=pet_data.get("name"),
             breed=pet_data.get("breed"),
             birthday=pet_data.get("birthday"),
+            client=Client.objects.get(pk=pet_data.get("client")),
         )
         return True, None
     
