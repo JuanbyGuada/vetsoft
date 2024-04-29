@@ -366,7 +366,7 @@ class Appointment(models.Model):
 
         pet = Pet.objects.get(id=pet_vet_data['pet'])
         vet = Vet.objects.get(id=pet_vet_data['vet'])
-        appointment = cls.objects.create(
+        Appointment.objects.create(
             pet=pet,
             vet=vet,
             date=pet_vet_data['date']
