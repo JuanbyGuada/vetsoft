@@ -2,8 +2,6 @@
 - **Integrante 1:** Casas Ortiz de Rosas, Juan Bautista
 - **Integrante 2:** Tastaca Lugo, Aylen
 
-
-
 # Vetsoft
 
 Aplicación web para veterinarias utilizada en la cursada 2024 de Ingeniería y Calidad de Software. UTN-FRLP
@@ -28,7 +26,10 @@ Aplicación web para veterinarias utilizada en la cursada 2024 de Ingeniería y 
 
 `python manage.py runserver`
 
-# Casas: la version actual utilizada es la 1.0
+# Casas Ortiz de Rosas: la version actual utilizada es la 1.0
+
+# Tastaca Lugo: la version actual utilizada es la 1.0
+
 
 # Pasos para construir la imagen Docker y desplegar el contenedor.
 - **1. Docker** Descargar e instalar docker desde "docker.com" para el sistema operativo correspondiente
