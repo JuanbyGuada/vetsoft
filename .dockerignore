@@ -1,0 +1,31 @@
+# .dockerignore
+
+# Archivos de caché, generados por compilación y temporales
+*.pyc
+*.pyo
+*.pyd
+*.log
+__pycache__/
+
+
+# Directorios de dependencias y entornos virtuales
+venv/
+.env
+
+# Archivos y directorios de desarrollo local
+.vscode/
+.idea/
+*.sqlite3
+*.db
+
+
+# Documentación
+TODO.md
+docs/
+
+# Archivo de control de versiones
+.git
+
+# Otros archivos y directorios
+*.bak
+
