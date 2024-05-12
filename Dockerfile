@@ -16,5 +16,8 @@ COPY . .
 # Expone el puerto en el que se ejecutará la aplicación
 EXPOSE 8000
 
+# Ejecutamos las migraciones de la base de datos
+RUN python manage.py migrate
+
 #Definimos el comando para ejecutar la aplicación
 CMD [ "python", "manage.py","runserver", "0.0.0.0:8000"]
