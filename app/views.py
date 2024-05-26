@@ -118,6 +118,7 @@ def products_form(request, id=None):
         else:
             product = get_object_or_404(Product, pk=product_id)
             product.update_product(request.POST)
+            saved, errors = Product.save_product(request.POST)
 
         if saved:
             return redirect(reverse("products_repo"))

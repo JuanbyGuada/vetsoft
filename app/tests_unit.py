@@ -1,5 +1,7 @@
 from django.test import TestCase
 from app.models import Client
+from app.models import Product
+from app.models import Provider
 
 
 class ClientModelTest(TestCase):
@@ -57,3 +59,72 @@ class ClientModelTest(TestCase):
         client_updated = Client.objects.get(pk=1)
 
         self.assertEqual(client_updated.phone, "221555232")
+
+class ProductModelTest(TestCase):
+
+
+    def setUp(self):
+        # Crear un proveedor
+        self.provider = Provider.objects.create(name="ProveedorEjemplo", email="correo@utn.com")
+        proveedores = Provider.objects.all()
+        self.assertEqual(len(proveedores), 1)
+
+    def test_can_create_and_get_product(self):
+        success, errors = Product.save_product(
+            {
+                "name": "Collar de Perro",
+                "type": "Ropa",
+                "price": 100,
+                "provider": self.provider.id,
+            }
+        )
+        self.assertTrue(success)
+        products = Product.objects.all()
+        self.assertEqual(len(products), 1)
+        self.assertEqual(products[0].name, "Collar de Perro")
+        self.assertEqual(products[0].price, 100)
+        self.assertEqual(products[0].type, "Ropa")
+        self.assertEqual(products[0].provider, self.provider)
+
+    def test_precio_positivo(self):
+        success, errors = Product.save_product(
+            {
+                "name": "Collar de Perro",
+                "type": "Ropa",
+                "price": 100,
+                "provider": self.provider.id,
+            }
+        )
+        self.assertTrue(success)
+        products = Product.objects.all()
+        self.assertEqual(len(products), 1)
+
+    def test_precio_negativo(self):
+        success, errors = Product.save_product(
+            {
+                "name": "Collar de Perro",
+                "type": "Ropa",
+                "price": -100,
+                "provider": self.provider.id,
+            }
+        )
+        self.assertFalse(success)
+        self.assertIn("price", errors)
+        self.assertEqual(errors["price"], "Por favor ingrese un numero positivo")
+        products = Product.objects.all()
+        self.assertEqual(len(products), 0)
+
+    def test_precio_nulo(self):
+        success, errors = Product.save_product(
+            {
+                "name": "Collar de Perro",
+                "type": "Ropa",
+                "price": 0,
+                "provider": self.provider.id,
+            }
+        )
+        self.assertFalse(success)
+        self.assertIn("price", errors)
+        self.assertEqual(errors["price"], "Por favor ingrese un precio")
+        products = Product.objects.all()
+        self.assertEqual(len(products), 0)

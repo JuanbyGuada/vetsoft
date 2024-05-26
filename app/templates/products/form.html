@@ -61,7 +61,8 @@
                         class="form-control"
                         step="0.01"
                         value="{{ product.price }}"
-                        required/>
+                        required
+                        min="0.01"/>
 
                     {% if errors.price %}
                         <div class="invalid-feedback">
