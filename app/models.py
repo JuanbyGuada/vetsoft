@@ -245,6 +245,13 @@ def validate_medicine(data):
 
     if dose == "":
         errors["dose"] = "Por favor ingrese una dosis"
+    else :
+        try:
+            dose= int(dose)
+            if dose < 1 or dose > 10:
+                errors["dose"] = "La dosis debe ser un número entre 1 y 10"
+        except ValueError:
+            errors["dose"] = "La dosis debe ser un número"
 
     return errors
 
@@ -271,11 +278,18 @@ class Medicine(models.Model):
         return True, None
     
     def update_medicine(self, medicine_data):
+        errors = validate_medicine(medicine_data)
+
+        if errors:
+            return False, errors
+
         self.name = medicine_data.get("name", "") or self.name
         self.description = medicine_data.get("description", "") or self.description
         self.dose = medicine_data.get("dose", "") or self.dose
 
         self.save() 
+
+        return True, None
 
         
 #  Pet Class
