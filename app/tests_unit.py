@@ -61,10 +61,8 @@ class ClientModelTest(TestCase):
         self.assertEqual(client_updated.phone, "221555232")
 
 class ProductModelTest(TestCase):
-
-
     def setUp(self):
-        # Crear un proveedor
+        # Crear un proveedor para los productos de prueba
         self.provider = Provider.objects.create(name="ProveedorEjemplo", email="correo@utn.com")
         proveedores = Provider.objects.all()
         self.assertEqual(len(proveedores), 1)
@@ -95,6 +93,7 @@ class ProductModelTest(TestCase):
                 "provider": self.provider.id,
             }
         )
+        self.assertIsNone(errors)
         self.assertTrue(success)
         products = Product.objects.all()
         self.assertEqual(len(products), 1)
