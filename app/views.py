@@ -318,16 +318,26 @@ def medicines_repository(request):
     return render(request, "medicines/repository.html", {"medicines": medicines})
 
 def medicines_form(request, id=None):
+    errors = {}
+    medicine_data = {
+        "name": "",
+        "description": "",
+        "dose": ""
+    }
     if request.method == "POST":
+        medicine_data = {
+            "name": request.POST.get("name", ""),
+            "description": request.POST.get("description", ""),
+            "dose": request.POST.get("dose", "")
+        }
         medicine_id = request.POST.get("id", "")
-        errors = {}
         saved = True
 
         if medicine_id == "":
-            saved, errors = Medicine.save_medicine(request.POST)
+            saved, errors = Medicine.save_medicine(medicine_data)
         else:
             medicine = get_object_or_404(Medicine, pk=medicine_id)
-            medicine.update_medicine(request.POST)
+            saved, errors = medicine.update_medicine(medicine_data)
 
         if saved:
             return redirect(reverse("medicines_repo"))
@@ -340,7 +350,7 @@ def medicines_form(request, id=None):
     if id is not None:
         medicine = get_object_or_404(Medicine, pk=id)
 
-    return render(request, "medicines/form.html", {"medicine": medicine})
+    return render(request, "medicines/form.html", {"errors": errors, "medicine": medicine})
 
 def medicines_delete(request):
     medicine_id = request.POST.get("medicine_id")

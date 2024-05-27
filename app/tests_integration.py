@@ -1,7 +1,6 @@
 from django.test import TestCase
 from django.shortcuts import reverse
-from app.models import Client
-from app.models import Product, Provider
+from app.models import Client, Medicine, Product, Provider
 
 
 class HomePageTest(TestCase):
@@ -238,3 +237,74 @@ class ProductTest(TestCase):
                 "provider": product.provider.id,
             },
         )
+        
+class MedicinesTest(TestCase):
+
+    def test_can_create_medicine(self):
+        response = self.client.post (
+            reverse("medicines_form"),
+            data={
+                "name": "MedicineA",
+                "description": "MedicineA",
+                "dose": "10",
+            },
+        )
+        medicines = Medicine.objects.all()
+        self.assertEqual(len(medicines), 1)
+
+        self.assertEqual(medicines[0].name, "MedicineA")
+        self.assertEqual(medicines[0].description, "MedicineA")
+        self.assertEqual(medicines[0].dose, 10)
+
+        self.assertRedirects(response, reverse("medicines_repo"))
+
+    def test_validation_errors_create_medicine(self):
+        response = self.client.post(
+            reverse("medicines_form"),
+            data={},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Por favor ingrese un nombre")
+        self.assertContains(response, "Por favor ingrese una descripción")
+        self.assertContains(response, "Por favor ingrese una dosis")
+
+    def test_edit_medicine_with_valid_data(self):
+        medicine = Medicine.objects.create(
+            name="Medi_A",
+            description="Desc_A",
+            dose=10,
+        )
+
+        response = self.client.post(
+            reverse("medicines_form"),
+            data={
+                "id": medicine.id,
+                "name": "Medi_B",
+                "description": medicine.description,
+                "dose": 2,
+            },
+        )
+
+        self.assertEqual(response.status_code, 302)
+
+
+        editedMedicine = Medicine.objects.get(pk=medicine.id)
+        self.assertEqual(editedMedicine.name, "Medi_B")
+        self.assertEqual(editedMedicine.description, medicine.description)
+        self.assertEqual(editedMedicine.dose, 2)
+
+
+    def test_edit_medicine_with_invalid_dose(self):
+        medicine = Medicine.objects.create(name="Medicina B", description="Descripción B", dose=5)
+
+        response = self.client.post(reverse("medicines_form"),
+                        {
+                        "id": medicine.id,
+                        "name": medicine.name,
+                        "description": medicine.description,
+                        "dose": -10
+                        })
+
+        self.assertEqual(response.status_code, 200) 
+        self.assertContains(response, "La dosis debe ser un número entre 1 y 10") #no cambia el medicamento, le vuelve a pedir los datos de vuelta

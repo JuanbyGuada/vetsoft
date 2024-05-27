@@ -52,11 +52,11 @@
                 </div>
                 <div>
                     <label for="dose" class="form-label">Dosis</label>
-                    <input type="text"
+                    <input type="int"
                         id="dose"
                         name="dose"
-                        value="{{medicine.dose}}"
-                        class="form-control"
+                        value="{{ medicine.dose }}"
+                        class="form-control {% if errors.dose %}is-invalid{% endif %}"
                         required/>
 
                     {% if errors.dose %}
