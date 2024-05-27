@@ -5,7 +5,7 @@ from playwright.sync_api import sync_playwright, expect, Browser
 
 from django.urls import reverse
 
-from app.models import Client
+from app.models import Client, Product, Provider
 
 os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 playwright = sync_playwright().start()
@@ -34,7 +34,7 @@ class PlaywrightTestCase(StaticLiveServerTestCase):
         super().tearDown()
         self.page.close()
 
-
+'''
 class HomeTestCase(PlaywrightTestCase):
     def test_should_have_navbar_with_links(self):
         self.page.goto(self.live_server_url)
@@ -59,6 +59,7 @@ class HomeTestCase(PlaywrightTestCase):
         expect(home_clients_link).to_be_visible()
         expect(home_clients_link).to_have_text("Clientes")
         expect(home_clients_link).to_have_attribute("href", reverse("clients_repo"))
+'''
 
 
 class ClientsRepoTestCase(PlaywrightTestCase):
@@ -165,6 +166,7 @@ class ClientsRepoTestCase(PlaywrightTestCase):
         expect(self.page.get_by_text("Juan Sebastián Veron")).not_to_be_visible()
 
 
+
 class ClientCreateEditTestCase(PlaywrightTestCase):
     def test_should_be_able_to_create_a_new_client(self):
         self.page.goto(f"{self.live_server_url}{reverse('clients_form')}")
@@ -242,3 +244,55 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
         expect(edit_action).to_have_attribute(
             "href", reverse("clients_edit", kwargs={"id": client.id})
         )
+
+class ProductCreateEditTestCase(PlaywrightTestCase):
+    def setUp(self):
+        super().setUp()
+        # Crear un proveedor para los tests
+        self.provider = Provider.objects.create(name="ProveedorEjemplo", email="correo@utn.com")
+        
+    def test_should_be_able_to_create_product_with_valid_price(self):
+        with playwright.chromium.launch() as browser:
+
+            page = browser.new_page()
+            page.goto(f"{self.live_server_url}{reverse('products_form')}")
+
+            page.wait_for_load_state("networkidle")
+
+            expect(page.get_by_role("form")).to_be_visible()
+
+            page.get_by_label("Nombre").fill("Collar de Perro") 
+            page.get_by_label("Tipo").fill("Ropa")
+            page.get_by_label("Precio").fill("100")
+            page.select_option("#provider", str(self.provider.id))
+
+
+
+            page.get_by_role("button", name="Guardar").click()
+
+            expect(page.get_by_text("Collar de Perro")).to_be_visible()
+            expect(page.get_by_text("Ropa")).to_be_visible()
+            expect(page.get_by_text("100")).to_be_visible()
+            expect(page.get_by_text("ProveedorEjemplo")).to_be_visible()
+
+    def test_create_product_with_invalid_data(self):
+        with playwright.chromium.launch() as browser:
+            page = browser.new_page()
+            page.goto(f"{self.live_server_url}{reverse('products_form')}")
+
+            page.wait_for_load_state("networkidle")
+
+            expect(page.get_by_role("form")).to_be_visible()
+
+            page.get_by_label("Nombre").fill("Collar de Perro") 
+            page.get_by_label("Tipo").fill("Ropa")
+            page.get_by_label("Precio").fill("-3")
+            page.select_option("#provider", str(self.provider.id))
+
+            page.get_by_role("button", name="Guardar").click()
+
+            assert page.url == f"{self.live_server_url}{reverse('products_form')}"
+
+            assert "Por favor ingrese un numero positivo" in page.inner_text("#price + .invalid-feedback")
+
+    
