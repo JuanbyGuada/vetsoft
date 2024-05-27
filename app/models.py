@@ -123,10 +123,17 @@ def validate_product(data):
     if not price:
         errors["price"] = "Por favor ingrese un precio"
     else:
-        try:
-            float(price)
-        except ValueError:
-            errors["price"] = "El precio debe ser un número"
+        price = float(price)
+        if price == 0:
+            errors["price"] = "Por favor ingrese un precio mayor a 0"
+        
+        if price < 0:
+            errors["price"] = "Por favor ingrese un numero positivo"
+        else:
+            try:
+                price = float(price)
+            except ValueError:
+                errors["price"] = "El precio debe ser un número"
 
     return errors
 
@@ -157,14 +164,19 @@ class Product(models.Model):
         return True, None
 
     def update_product(self, product_data):
+        error= validate_product(product_data)
+        if len(error.keys()) > 0:
+            return False, error
+        
         self.name = product_data.get("name", "") or self.name
         self.type = product_data.get("type", "") or self.type
-        self.price = product_data.get("price", "") or self.price
+        self.price = product_data.get("price", ) or self.price
 
         if 'provider' in product_data:
             provider_id = product_data.get("provider")
             self.provider = Provider.objects.get(pk=provider_id)
-        self.save() 
+        self.save()
+        return True, None 
 
 #client-product (sale)
 

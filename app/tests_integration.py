@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.shortcuts import reverse
-from app.models import Client, Medicine
+from app.models import Client, Medicine, Product, Provider
 
 
 class HomePageTest(TestCase):
@@ -94,6 +94,150 @@ class ClientsTest(TestCase):
         self.assertEqual(editedClient.address, client.address)
         self.assertEqual(editedClient.email, client.email)
 
+class ProductTest(TestCase):
+    def setUp(self): # Crear un proveedor para los productos de prueba
+        self.provider = Provider.objects.create(name="ProveedorEjemplo", email="correo@utn.com")
+
+    def test_repo_use_repo_template(self): # Test para verificar que se use el template correcto para el repositorio de productos
+        response = self.client.get(reverse("products_repo"))
+        self.assertTemplateUsed(response, "products/repository.html")
+    
+    def test_repo_display_all_products(self): # Test para verificar que se muestren todos los productos
+        response = self.client.get(reverse("products_repo"))
+        self.assertTemplateUsed(response, "products/repository.html")
+
+    def test_form_use_form_template(self): # Test para verificar que se use el template correcto para el formulario
+        response = self.client.get(reverse("products_form"))
+        self.assertTemplateUsed(response, "products/form.html")
+
+    def test_can_create_product(self): # Test para verificar que se pueda crear un producto
+        response = self.client.post(
+            reverse("products_form"),
+            data={
+                "name": "Collar de Perro",
+                "type": "Ropa",
+                "price": 100,
+                "provider": self.provider.id,
+            },
+        )
+        products = Product.objects.all()
+        self.assertEqual(len(products), 1)
+
+        self.assertEqual(products[0].name, "Collar de Perro")
+        self.assertEqual(products[0].type, "Ropa")
+        self.assertEqual(products[0].price, 100)
+        self.assertEqual(products[0].provider, self.provider)
+
+        self.assertRedirects(response, reverse("products_repo"))
+
+    def test_validation_errors_create_product(self): # Test para verificar que se muestren los errores de validación al crear un producto
+        response = self.client.post(
+            reverse("products_form"),
+            data={},
+        )
+
+        self.assertContains(response, "Por favor ingrese un nombre")
+        self.assertContains(response, "Por favor ingrese un tipo")
+        self.assertContains(response, "Por favor ingrese un precio")
+
+    def test_should_response_with_404_status_if_product_doesnt_exists(self): # Test para verificar que se muestre un error 404 si el producto no existe
+        response = self.client.get(reverse("products_edit", kwargs={"id": 100}))
+        self.assertEqual(response.status_code, 404)
+    
+    def test_validacion_precio_negativo(self): # Test para verificar que se muestre un error si el precio es negativo al crear un producto
+        response = self.client.post(
+            reverse("products_form"),
+            data={
+                "name": "Collar de Perro",
+                "type": "Ropa",
+                "price": -100,
+                "provider": self.provider.id,
+            },
+        )
+
+        self.assertContains(response, "Por favor ingrese un numero positivo")
+
+    def test_validacion_precio_nulo(self): # Test para verificar que se muestre un error si el precio es nulo al crear un producto
+        response = self.client.post(
+            reverse("products_form"),
+            data={
+                "name": "Collar de Perro",
+                "type": "Ropa",
+                "price": 0,
+                "provider": self.provider.id,
+            },
+        )
+
+        self.assertContains(response, "Por favor ingrese un precio")
+    
+    def test_edit_product_with_valid_data(self): # Test para verificar que se pueda editar un producto con datos válidos
+        product = Product.objects.create(
+            name="Collar de Perro",
+            type="Ropa",
+            price=100,
+            provider=self.provider,
+        )
+
+        response = self.client.post(
+            reverse("products_form"),
+            data={
+                "id": product.id,
+                "name": "Collar de Gato",
+                "type": product.type,
+                "price": 90,
+                "provider": product.provider.id,
+            },
+        )
+
+        # redirect after post
+        self.assertEqual(response.status_code, 302)
+
+        editedProduct = Product.objects.get(pk=product.id)
+        self.assertEqual(editedProduct.name, "Collar de Gato")
+        self.assertEqual(editedProduct.type, product.type)
+        self.assertEqual(editedProduct.price, 90)
+        self.assertEqual(editedProduct.provider, product.provider)
+
+    def test_validacion_precio_negativo_edit_product(self): # Test para verificar que se muestre un error si el precio es negativo al editar un producto
+        product = Product.objects.create(
+            name="Collar de Perro",
+            type="Ropa",
+            price=100,
+            provider=self.provider,
+        )
+
+        response = self.client.post(
+            reverse("products_form"),
+            data={
+                "id": product.id,
+                "name": "Collar de Gato",
+                "type": product.type,
+                "price": -90,
+                "provider": product.provider.id,
+            },
+        )
+
+        self.assertContains(response, "Por favor ingrese un numero positivo")
+
+    def test_validacion_precio_nulo_edit_product(self): # Test para verificar que se muestre un error si el precio es nulo al editar un producto
+        product = Product.objects.create(
+            name="Collar de Perro",
+            type="Ropa",
+            price=100,
+            provider=self.provider,
+        )
+
+        response = self.client.post(
+            reverse("products_form"),
+            data={
+                "id": product.id,
+                "name": "Collar de Gato",
+                "type": product.type,
+                "price": 0,
+                "provider": product.provider.id,
+            },
+        )
+        
 class MedicinesTest(TestCase):
 
     def test_can_create_medicine(self):
