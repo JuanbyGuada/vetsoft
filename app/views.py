@@ -104,27 +104,37 @@ def products_repository(request):
 
 def products_form(request, id=None):
 
-    providers = Provider.objects.all()  
-
+    errors = {}
+    providers = Provider.objects.all()
+    product_data = {
+        "name": "",
+        "type": "",
+        "price": "",
+        "provider" : ""
+        }
 
     if request.method == "POST":
+        product_data = {
+            "name": request.POST.get("name", ""),
+            "type": request.POST.get("type", ""),
+            "price": request.POST.get("price", ""),
+            "provider": request.POST.get("provider", "")
+        }
         product_id = request.POST.get("id", "")
 
-        errors = {}
         saved = True
 
         if product_id == "":
-            saved, errors = Product.save_product(request.POST)
+            saved, errors = Product.save_product(product_data)
         else:
             product = get_object_or_404(Product, pk=product_id)
-            product.update_product(request.POST)
-            saved, errors = Product.save_product(request.POST)
+            saved, errors = product.update_product(product_data)
 
         if saved:
             return redirect(reverse("products_repo"))
 
         return render(
-            request, "products/form.html", {"errors": errors, "product": request.POST, "providers": providers }
+            request, "products/form.html", {"errors": errors, "product": product_data, "providers": providers }
         )
     
     else:
@@ -133,7 +143,7 @@ def products_form(request, id=None):
             product = get_object_or_404(Product, pk=id)
             return render(request, "products/form.html", {"product": product, "providers": providers})
         
-        return render(request, "products/form.html", {"providers": providers})
+        return render(request, "products/form.html", {"errors": errors, "providers": providers})
 
 
 

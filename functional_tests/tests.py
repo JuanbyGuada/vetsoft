@@ -4,7 +4,7 @@ from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from playwright.sync_api import sync_playwright, expect, Browser
 
 from django.urls import reverse
-from app.modelos import Client, Product, Provider, Medicine
+from app.models import Client, Product, Provider, Medicine
 from app.context_processors import links
 
 os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
@@ -34,6 +34,7 @@ class PlaywrightTestCase(StaticLiveServerTestCase):
         super().tearDown()
         self.page.close()
 
+
 class HomeTestCase(PlaywrightTestCase):
      def test_should_have_navbar_with_links(self):
         self.page.goto(self.live_server_url)
@@ -57,6 +58,7 @@ class HomeTestCase(PlaywrightTestCase):
 
             home_clients_link = self.page.get_by_test_id("home-Clientes")
             home_pets_link = self.page.get_by_test_id("home-Mascotas")
+
 
             expect(home_clients_link).to_be_visible()
             expect(home_clients_link).to_have_attribute("href", reverse("clients_repo"))
@@ -387,3 +389,4 @@ class MedicineCreateEditTestCase(PlaywrightTestCase):
             expect(edit_action).to_have_attribute(
                 "href", reverse("medicines_edit", kwargs={"id": medicine.id})
             )
+
