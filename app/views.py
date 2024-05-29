@@ -103,47 +103,35 @@ def products_repository(request):
 
 
 def products_form(request, id=None):
-
     errors = {}
     providers = Provider.objects.all()
-    product_data = {
-        "name": "",
-        "type": "",
-        "price": "",
-        "provider" : ""
-        }
+    product = None # Inicializamos la variable product como None
 
     if request.method == "POST":
+        product_id = request.POST.get("id")
         product_data = {
-            "name": request.POST.get("name", ""),
-            "type": request.POST.get("type", ""),
-            "price": request.POST.get("price", ""),
-            "provider": request.POST.get("provider", "")
+            "name": request.POST.get("name"),
+            "type": request.POST.get("type"),
+            "price": request.POST.get("price"),
+            "provider": request.POST.get("provider")
         }
-        product_id = request.POST.get("id", "")
 
-        saved = True
-
-        if product_id == "":
-            saved, errors = Product.save_product(product_data)
-        else:
+        if product_id:
             product = get_object_or_404(Product, pk=product_id)
             saved, errors = product.update_product(product_data)
+        else:
+            saved, errors = Product.save_product(product_data)
 
         if saved:
             return redirect(reverse("products_repo"))
 
-        return render(
-            request, "products/form.html", {"errors": errors, "product": product_data, "providers": providers }
-        )
-    
     else:
-        product = None
         if id is not None:
             product = get_object_or_404(Product, pk=id)
-            return render(request, "products/form.html", {"product": product, "providers": providers})
-        
-        return render(request, "products/form.html", {"errors": errors, "providers": providers})
+        else:
+            product = None
+
+    return render(request, "products/form.html", {"product": product, "providers": providers, "errors": errors})
 
 
 
@@ -472,3 +460,6 @@ def pet_medical_history(request, pet_id):
     events.sort(key=lambda x: x['date'])
 
     return render(request, 'pets/medical_history.html', {'pet': pet, 'events': events})
+
+
+

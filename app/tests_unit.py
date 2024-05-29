@@ -1,5 +1,5 @@
 from django.test import TestCase
-from app.modelos import Client, Medicine, Product, Provider
+from app.models import Client, Medicine, Product, Provider
 
 
 class ClientModelTest(TestCase):

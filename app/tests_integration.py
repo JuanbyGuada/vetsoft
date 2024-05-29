@@ -130,16 +130,21 @@ class ProductTest(TestCase):
 
         self.assertRedirects(response, reverse("products_repo"))
 
-    def test_validation_errors_create_product(self): # Test para verificar que se muestren los errores de validación al crear un producto
+    def test_validation_errors_create_product(self):
         response = self.client.post(
             reverse("products_form"),
-            data={},
+            data={
+                "name": "",
+                "type": "",
+                "price": "",
+            },
         )
 
         self.assertContains(response, "Por favor ingrese un nombre")
         self.assertContains(response, "Por favor ingrese un tipo")
         self.assertContains(response, "Por favor ingrese un precio")
 
+        
     def test_should_response_with_404_status_if_product_doesnt_exists(self): # Test para verificar que se muestre un error 404 si el producto no existe
         response = self.client.get(reverse("products_edit", kwargs={"id": 100}))
         self.assertEqual(response.status_code, 404)
