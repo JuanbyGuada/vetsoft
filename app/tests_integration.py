@@ -242,6 +242,7 @@ class ProductTest(TestCase):
                 "provider": product.provider.id,
             },
         )
+        self.assertContains(response, "Por favor ingrese un precio mayor a 0")
         
 class MedicinesTest(TestCase):
 
