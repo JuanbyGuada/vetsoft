@@ -4,7 +4,7 @@ from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from playwright.sync_api import sync_playwright, expect, Browser
 
 from django.urls import reverse
-from app.models import Client, Product, Provider, Medicine
+from app.models import Client, Provider, Medicine
 from app.context_processors import links
 
 os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"

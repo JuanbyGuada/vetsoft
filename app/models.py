@@ -2,8 +2,16 @@ from django.db import models
 from datetime import datetime
 
 
+def validate_client(data):  
 
-def validate_client(data):
+    """
+    valida los datos del cliente proporcionados en el formulario.
+
+    data: Los datos del cliente. nombre, teléfono, correo electrónico.
+
+    devuelve un diccionario que contiene mensajes de error si la validación falla.
+    """
+
     errors = {}
 
     name = data.get("name", "")
@@ -34,7 +42,7 @@ class Client(models.Model):
         return self.name
 
     @classmethod
-    def save_client(cls, client_data):
+    def save_client(cls, client_data): 
         errors = validate_client(client_data)
 
         if len(errors.keys()) > 0:
@@ -49,7 +57,7 @@ class Client(models.Model):
 
         return True, None
 
-    def update_client(self, client_data):
+    def update_client(self, client_data):  #función que nos permitirá actualizar un cliente en la base de datos
         self.name = client_data.get("name", "") or self.name
         self.email = client_data.get("email", "") or self.email
         self.phone = client_data.get("phone", "") or self.phone
@@ -62,6 +70,15 @@ class Client(models.Model):
 #  Provider Class
 
 def validate_provider(data):
+    
+    """
+    valida los datos del proveedor proporcionados en el formulario.
+
+    data: Los datos del proveedor. nombre, correo electrónico.
+
+    devuelve un diccionario que contiene mensajes de error si la validación falla.
+    """
+
     errors = {}
 
     name = data.get("name", "")
@@ -85,7 +102,7 @@ class Provider(models.Model):
 
 
     @classmethod
-    def save_provider(cls, provider_data):
+    def save_provider(cls, provider_data): 
         errors = validate_provider(provider_data)
 
         if len(errors.keys()) > 0:
@@ -106,7 +123,15 @@ class Provider(models.Model):
         
 #  Product Class
 
-def validate_product(data):
+def validate_product(data): 
+    
+    """
+    valida los datos del producto proporcionados en el formulario.
+
+    data: Los datos del producto. nombre, tipo, precio, proveedor.
+
+    devuelve un diccionario que contiene mensajes de error si la validación falla.
+    """
     errors = {}
 
     name = data.get("name", "")
@@ -191,6 +216,15 @@ class Sale(models.Model):
 #  Vet Class
 
 def validate_vet(data):
+
+    """
+    valida los datos del veterinario proporcionados en el formulario.
+
+    data: Los datos del veterinario. nombre, teléfono, correo electrónico.
+
+    devuelve un diccionario que contiene mensajes de error si la validación falla.
+    """
+        
     errors = {}
 
     name = data.get("name", "")
@@ -243,6 +277,14 @@ class Vet(models.Model):
 #  Medicine Class
 
 def validate_medicine(data):
+
+    """
+    valida los datos del medicamento proporcionados en el formulario.
+
+    data: Los datos del medicamento. nombre, descripción, dosis.
+
+    devuelve un diccionario que contiene mensajes de error si la validación falla.
+    """
     errors = {}
 
     name = data.get("name", "")
@@ -307,6 +349,15 @@ class Medicine(models.Model):
 #  Pet Class
 
 def validate_pet(data):
+
+    """
+    valida los datos de la mascota proporcionados en el formulario.
+
+    data: Los datos de la mascota. nombre, raza, fecha de nacimiento, dueño.
+
+    devuelve un diccionario que contiene mensajes de error si la validación falla.
+    """
+        
     errors = {}
 
     name = data.get("name", "")
