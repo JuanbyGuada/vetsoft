@@ -23,6 +23,14 @@ def validate_client(data):
 
     if phone == "":
         errors["phone"] = "Por favor ingrese un teléfono"
+    else :
+        phone = str(phone)
+        if not phone.startswith("54"):
+             errors["phone"] = "El teléfono debe empezar con 54"
+        try:
+            phone = int(phone)
+        except ValueError:
+            errors["phone"] = "El teléfono debe ser un número"
 
     if email == "":
         errors["email"] = "Por favor ingrese un email"
@@ -58,11 +66,18 @@ class Client(models.Model):
         return True, None
 
     def update_client(self, client_data):  #función que nos permitirá actualizar un cliente en la base de datos
+        
+        error= validate_client(client_data)
+        if len(error.keys()) > 0:
+            return False, error
+        
+
         self.name = client_data.get("name", "") or self.name
         self.email = client_data.get("email", "") or self.email
         self.phone = client_data.get("phone", "") or self.phone
         self.address = client_data.get("address", "") or self.address
         self.save()
+        return True, None
 
         
 

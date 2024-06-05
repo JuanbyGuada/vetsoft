@@ -37,11 +37,11 @@
                 </div>
                 <div>
                     <label for="phone" class="form-label">Teléfono</label>
-                    <input type="text"
+                    <input type="int"
                         id="phone"
                         name="phone"
-                        class="form-control"
-                        value="{{client.phone}}"
+                        class="form-control {% if errors.phone %}is-invalid{% endif %}"
+                        value="{{ client.phone }}"
                         required/>
 
                     {% if errors.phone %}
