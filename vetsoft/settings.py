@@ -37,13 +37,7 @@ ALLOWED_HOSTS = []
 
 # Application definition
 # SECURITY WARNING: don't run with debug turned on in production!
-#DEBUG = os.getenv("DEBUG", "False").upper() == "TRUE"
 
-DEBUG = True
-SECRET_KEY= "django-insecure-p)^5i@33!)v)l7*c#q)%j(g5d+**-yo%)6l*vg!gs_w-e=^_ig"
-
-
-#SECRET_KEY = os.environ.get('SECRET_KEY')
 INSTALLED_APPS = [
     "app.apps.AppConfig",
     "django.contrib.admin",
