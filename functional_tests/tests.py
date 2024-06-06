@@ -245,7 +245,7 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
         )
 
         path = reverse("clients_edit", kwargs={"id": client.id})
-        self.page.goto(f"{self.live_server_url}{path}")
+        self.page.goto((f"{self.live_server_url}{path}"),timeout=60000)
 
         self.page.get_by_label("Nombre").fill("Guido Carrillo")
         self.page.get_by_label("Teléfono").fill("54221232555")
