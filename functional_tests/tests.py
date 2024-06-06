@@ -4,8 +4,8 @@ from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from playwright.sync_api import sync_playwright, expect, Browser
 
 from django.urls import reverse
-
-from app.models import Client
+from app.models import Client, Provider, Medicine
+from app.context_processors import links
 
 os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 playwright = sync_playwright().start()
@@ -36,30 +36,52 @@ class PlaywrightTestCase(StaticLiveServerTestCase):
 
 
 class HomeTestCase(PlaywrightTestCase):
-    def test_should_have_navbar_with_links(self):
+     def test_should_have_navbar_with_links(self):
         self.page.goto(self.live_server_url)
 
-        navbar_home_link = self.page.get_by_test_id("navbar-Home")
+        for link_info in links:
+            link_label = link_info['label']
 
-        expect(navbar_home_link).to_be_visible()
-        expect(navbar_home_link).to_have_text("Home")
-        expect(navbar_home_link).to_have_attribute("href", reverse("home"))
+            # se construye el selector basado en el enlace label
+            link_selector = f'[data-testid="navbar-{link_label}"]'
+            
+            # se espera que el selector esté en la página
+            nav_link = self.page.wait_for_selector(link_selector)
 
-        navbar_clients_link = self.page.get_by_test_id("navbar-Clientes")
+            assert nav_link.is_visible()
+            assert nav_link.inner_text().strip() == link_label
 
-        expect(navbar_clients_link).to_be_visible()
-        expect(navbar_clients_link).to_have_text("Clientes")
-        expect(navbar_clients_link).to_have_attribute("href", reverse("clients_repo"))
 
-    def test_should_have_home_cards_with_links(self):
-        self.page.goto(self.live_server_url)
+        
+     def  test_should_have_home_cards_with_links(self): 
+            self.page.goto(self.live_server_url)
 
-        home_clients_link = self.page.get_by_test_id("home-Clientes")
+            home_clients_link = self.page.get_by_test_id("home-Clientes")
+            home_pets_link = self.page.get_by_test_id("home-Mascotas")
 
-        expect(home_clients_link).to_be_visible()
-        expect(home_clients_link).to_have_text("Clientes")
-        expect(home_clients_link).to_have_attribute("href", reverse("clients_repo"))
 
+            expect(home_clients_link).to_be_visible()
+            expect(home_clients_link).to_have_attribute("href", reverse("clients_repo"))
+
+            expect(home_pets_link).to_be_visible()
+            expect(home_pets_link).to_have_attribute("href", reverse("pets_repo"))
+
+            home_products_link = self.page.get_by_test_id("home-Productos")
+            expect(home_products_link).to_be_visible()
+            expect(home_products_link).to_have_attribute("href", reverse("products_repo"))
+
+            home_vets_link = self.page.get_by_test_id("home-Veterinarios")
+            expect(home_vets_link).to_be_visible()
+            expect(home_vets_link).to_have_attribute("href", reverse("vets_repo"))
+
+            home_medicines_link = self.page.get_by_test_id("home-Medicamentos")
+            expect(home_medicines_link).to_be_visible()
+            expect(home_medicines_link).to_have_attribute("href", reverse("medicines_repo"))
+
+            home_providers_link = self.page.get_by_test_id("home-Proveedores")
+            expect(home_providers_link).to_be_visible()
+            expect(home_providers_link).to_have_attribute("href", reverse("providers_repo"))
+        
 
 class ClientsRepoTestCase(PlaywrightTestCase):
     def test_should_show_message_if_table_is_empty(self):
@@ -165,6 +187,7 @@ class ClientsRepoTestCase(PlaywrightTestCase):
         expect(self.page.get_by_text("Juan Sebastián Veron")).not_to_be_visible()
 
 
+
 class ClientCreateEditTestCase(PlaywrightTestCase):
     def test_should_be_able_to_create_a_new_client(self):
         self.page.goto(f"{self.live_server_url}{reverse('clients_form')}")
@@ -242,3 +265,128 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
         expect(edit_action).to_have_attribute(
             "href", reverse("clients_edit", kwargs={"id": client.id})
         )
+
+class ProductCreateEditTestCase(PlaywrightTestCase):
+    def setUp(self):
+        super().setUp()
+        # Crear un proveedor para los tests
+        self.provider = Provider.objects.create(name="ProveedorEjemplo", email="correo@utn.com")
+        
+    def test_should_be_able_to_create_product_with_valid_price(self):
+        with playwright.chromium.launch() as browser:
+
+            page = browser.new_page()
+            page.goto(f"{self.live_server_url}{reverse('products_form')}")
+
+            page.wait_for_load_state("networkidle")
+
+            expect(page.get_by_role("form")).to_be_visible()
+
+            page.get_by_label("Nombre").fill("Collar de Perro") 
+            page.get_by_label("Tipo").fill("Ropa")
+            page.get_by_label("Precio").fill("100")
+            page.select_option("#provider", str(self.provider.id))
+
+
+
+            page.get_by_role("button", name="Guardar").click()
+
+            expect(page.get_by_text("Collar de Perro")).to_be_visible()
+            expect(page.get_by_text("Ropa")).to_be_visible()
+            expect(page.get_by_text("100")).to_be_visible()
+            expect(page.get_by_text("ProveedorEjemplo")).to_be_visible()
+
+    def test_create_product_with_invalid_data(self):
+        with playwright.chromium.launch() as browser:
+            page = browser.new_page()
+            page.goto(f"{self.live_server_url}{reverse('products_form')}")
+
+            page.wait_for_load_state("networkidle")
+
+            expect(page.get_by_role("form")).to_be_visible()
+
+            page.get_by_label("Nombre").fill("Collar de Perro") 
+            page.get_by_label("Tipo").fill("Ropa")
+            page.get_by_label("Precio").fill("-3")
+            page.select_option("#provider", str(self.provider.id))
+
+            page.get_by_role("button", name="Guardar").click()
+
+            assert page.url == f"{self.live_server_url}{reverse('products_form')}"
+
+            assert "Por favor ingrese un numero positivo" in page.inner_text("#price + .invalid-feedback")
+
+class MedicineCreateEditTestCase(PlaywrightTestCase):
+    def test_should_be_able_to_create_medicine_with_valid_dose(self):
+        with playwright.chromium.launch() as browser:
+
+            page = browser.new_page()
+            page.goto(f"{self.live_server_url}{reverse('medicines_form')}")
+
+            page.wait_for_load_state("networkidle")
+
+            expect(page.get_by_role("form")).to_be_visible()
+
+            page.get_by_label("Nombre").fill("MedicineA") 
+            page.get_by_label("Descripción").fill("DescriptionA")
+            page.get_by_label("Dosis").fill("5")
+
+
+
+            page.get_by_role("button", name="Guardar").click()
+
+            expect(page.get_by_text("MedicineA")).to_be_visible()
+            expect(page.get_by_text("DescriptionA")).to_be_visible()
+            expect(page.get_by_text("5")).to_be_visible()
+
+    def test_create_medicine_with_invalid_data(self):
+        with playwright.chromium.launch() as browser:
+            page = browser.new_page()
+            page.goto(f"{self.live_server_url}{reverse('medicines_form')}")
+
+            page.wait_for_load_state("networkidle")
+
+            expect(page.get_by_role("form")).to_be_visible()
+
+            page.get_by_label("Nombre").fill("") 
+            page.get_by_label("Descripción").fill("DescriptionA")
+            page.get_by_label("Dosis").fill("abc") 
+
+            page.get_by_role("button", name="Guardar").click()
+
+            assert page.url == f"{self.live_server_url}{reverse('medicines_form')}"
+
+            assert "Por favor ingrese un nombre" in page.inner_text("#name + .invalid-feedback")
+            assert "La dosis debe ser un número" in page.inner_text("#dose + .invalid-feedback")
+
+    def  test_should_be_able_to_edit_a_medicine(self):
+            
+            medicine = Medicine.objects.create(
+            name="MedicineA",
+            description="DescriptionA",
+            dose="5",)
+
+            path = reverse("medicines_edit", kwargs={"id": medicine.id})
+
+            self.page.goto(f"{self.live_server_url}{path}")
+
+            self.page.get_by_label("Nombre").fill("MedicineB")
+            self.page.get_by_label("Descripción").fill("DescriptionB")
+            self.page.get_by_label("Dosis").fill("8")
+
+            self.page.get_by_role("button", name="Guardar").click()
+
+            expect(self.page.get_by_text("MedicineA")).not_to_be_visible()
+            expect(self.page.get_by_text("DescriptionA")).not_to_be_visible()
+            expect(self.page.get_by_text("5")).not_to_be_visible()
+
+            expect(self.page.get_by_text("MedicineB")).to_be_visible()
+            expect(self.page.get_by_text("DescriptionB")).to_be_visible()
+            expect(self.page.get_by_text("8")).to_be_visible()
+
+
+            edit_action = self.page.get_by_role("link", name="Editar")
+            expect(edit_action).to_have_attribute(
+                "href", reverse("medicines_edit", kwargs={"id": medicine.id})
+            )
+

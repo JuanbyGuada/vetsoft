@@ -4,15 +4,46 @@ from .models import Client, Product, Pet, Vet, Medicine, Provider, Sale, PetMedi
 
 
 def home(request):
+
+    """
+    Renderiza la página de inicio.
+
+    Returns:
+        HttpResponse: La respuesta que contiene la página de inicio renderizada.
+    """
+
     return render(request, "home.html")
 
 
 def clients_repository(request):
+
+    """
+    Renderiza la página del repositorio de clientes con todos los clientes.
+
+    """
+     
     clients = Client.objects.all()
     return render(request, "clients/repository.html", {"clients": clients})
 
 
 def clients_form(request, id=None):
+
+    """
+    Maneja el formulario de cliente para crear o actualizar un cliente.
+
+    Args:
+        request (HttpRequest):
+            - Si la solicitud es POST y el cliente se guarda o se actualiza con éxito, redirige al repositorio de clientes.
+            - Si la solicitud es POST y hay errores, renderiza el formulario de cliente con los errores.
+            - Si la solicitud es GET, renderiza el formulario de cliente con los datos existentes si se proporciona un ID, 
+              o un formulario vacío si no se proporciona ningún ID
+        id (int, opcional): El ID del cliente para actualizar un cliente existente. Por defecto es None.
+
+    Returns:
+        Si se guarda bien o se edita con éxito, redirige al repositorio 
+        Si hay errores, los devuelve al form.html
+    """
+
     if request.method == "POST":
         client_id = request.POST.get("id", "")
         errors = {}
@@ -39,6 +70,13 @@ def clients_form(request, id=None):
 
 
 def clients_delete(request):
+
+    """
+    Elimina un cliente.
+
+    Si se elimina con éxito, redirige a la página del repositorio de clientes.
+    """
+
     client_id = request.POST.get("client_id")
     client = get_object_or_404(Client, pk=int(client_id))
     client.delete()
@@ -50,11 +88,26 @@ def clients_delete(request):
 
 
 def providers_repository(request):
+    """
+    Renderiza la página del repositorio de proveedores con todos los proveedores.
+
+    """
     providers = Provider.objects.all()
     return render(request, "providers/repository.html", {"providers": providers})
 
 
 def providers_form(request, id=None):
+
+    """
+    Maneja el formulario de proveedor para crear o actualizar un proveedor.
+
+    Args:
+        request (HttpRequest): POST o GET
+        id (int, opcional): El ID del proveedor para actualizar un proveedor existente. Por defecto es None.
+
+    """
+
+    
     if request.method == "POST":
         provider_id = request.POST.get("id", "")
         errors = {}
@@ -80,12 +133,22 @@ def providers_form(request, id=None):
     return render(request, "providers/form.html", {"provider": provider})
 
 def provider_products(request, provider_id):
+
+    """
+    Renderiza la página con una lista de productos de un proveedor determinado, encontrado por provider_id.
+
+    """
     provider = get_object_or_404(Provider, pk=provider_id)
     products = Product.objects.filter(provider=provider)
     return render(request, 'providers/products.html', {'provider': provider, 'products': products})
 
 
 def providers_delete(request):
+
+    """
+    Elimina un proveedor de la base de datos.
+    """
+
     provider_id = request.POST.get("provider_id")
     provider = get_object_or_404(Provider, pk=int(provider_id))
     provider.delete()
@@ -98,45 +161,58 @@ def providers_delete(request):
 
 
 def products_repository(request):
+
+    """
+    Renderiza la página del repositorio de productos que se encuentran en la base de datos.
+    """
+
     products = Product.objects.all()
     return render(request, "products/repository.html", {"products": products})
 
 
 def products_form(request, id=None):
 
-    providers = Provider.objects.all()  
+    """
+    Renderiza el formulario de productos para crear o actualizar un producto.
+    """
 
+    errors = {}
+    providers = Provider.objects.all()
+    product = None # Inicializamos la variable product como None
 
     if request.method == "POST":
-        product_id = request.POST.get("id", "")
+        product_id = request.POST.get("id")
+        product_data = {
+            "name": request.POST.get("name"),
+            "type": request.POST.get("type"),
+            "price": request.POST.get("price"),
+            "provider": request.POST.get("provider")
+        }
 
-        errors = {}
-        saved = True
-
-        if product_id == "":
-            saved, errors = Product.save_product(request.POST)
-        else:
+        if product_id:
             product = get_object_or_404(Product, pk=product_id)
-            product.update_product(request.POST)
+            saved, errors = product.update_product(product_data)
+        else:
+            saved, errors = Product.save_product(product_data)
 
         if saved:
             return redirect(reverse("products_repo"))
 
-        return render(
-            request, "products/form.html", {"errors": errors, "product": request.POST, "providers": providers }
-        )
-    
     else:
-        product = None
         if id is not None:
             product = get_object_or_404(Product, pk=id)
-            return render(request, "products/form.html", {"product": product, "providers": providers})
-        
-        return render(request, "products/form.html", {"providers": providers})
+        else:
+            product = None
+
+    return render(request, "products/form.html", {"product": product, "providers": providers, "errors": errors})
 
 
 
 def products_delete(request):
+
+    """
+    Se elimina un producto de la base de datos
+    """
     product_id = request.POST.get("product_id")
     product = get_object_or_404(Product, pk=int(product_id))
     product.delete()
@@ -149,12 +225,20 @@ def products_delete(request):
 #sale
 
 def client_purchases(request, client_id):
+
+    """
+    Se muestra todas los productos que el cliente ha comprado
+    """
     client = get_object_or_404(Client, id=client_id)
     purchases = Sale.objects.filter(client=client)
     return render(request, 'clients/products/client_purchases.html', {'client': client, 'purchases': purchases})
 
 
 def add_purchase(request, client_id):
+
+    """
+    Se agrega un producto a la lista de compras del cliente
+    """
     client = get_object_or_404(Client, id=client_id)
     if request.method == 'POST':
         product_id = request.POST.get('product_id')
@@ -174,10 +258,18 @@ def add_purchase(request, client_id):
 #pet
 
 def pets_repository(request):
+
+    """
+    Renderiza la página del repositorio de mascotas con todas las mascotas en la base de datos.
+    """
     pets = Pet.objects.all()
     return render(request, "pets/repository.html", {"pets": pets})
 
 def pets_form(request, id=None):
+
+    """
+    Función que se encarga de manejar el formulario de mascotas para crear o actualizar una mascota.
+    """
     clients = Client.objects.all()
     return_url = request.GET.get('return_url') or request.META.get('HTTP_REFERER')
 
@@ -213,6 +305,10 @@ def pets_form(request, id=None):
 
 
 def pets_delete(request):
+
+    """
+    Elimina una mascota de la base de datos.
+    """
     pet_id = request.POST.get("pet_id")
     pet = get_object_or_404(Pet, pk=int(pet_id))
     pet.delete()
@@ -222,10 +318,18 @@ def pets_delete(request):
 # vet
 
 def vets_repository(request):
+
+    """
+    Se renderiza la página del repositorio de veterinarios con todos los veterinarios en la base de datos.
+    """
     vets = Vet.objects.all()
     return render(request, "vets/repository.html", {"vets": vets})
 
 def vets_form(request, id=None):
+
+    """
+    Función que se encarga de manejar el formulario de veterinarios para crear o actualizar un veterinario.
+    """
     if request.method == "POST":
         vet_id = request.POST.get("id", "")
         errors = {}
@@ -251,6 +355,10 @@ def vets_form(request, id=None):
     return render(request, "vets/form.html", {"vet": vet})
 
 def vets_delete(request):
+
+    """
+    Elimina un veterinario de la base de datos.
+    """
     vet_id = request.POST.get("vet_id")
     vet = get_object_or_404(Vet, pk=int(vet_id))
     vet.delete()
@@ -263,11 +371,19 @@ def vets_delete(request):
 
 
 def pet_appointments_history(request, pet_id):
+
+    """
+    Función que se encarga de mostrar todas las citas de una mascota.
+    """
     pet = get_object_or_404(Pet, id=pet_id)
     appointments = pet.appointments.all()
     return render(request, 'pet-vet/citas.html', {'pet': pet, 'appointments': appointments})
 
 def add_appointment_to_pet(request, pet_id):
+
+    """
+    Función que se encarga de agregar una cita a una mascota.
+    """
     pet = get_object_or_404(Pet, id=pet_id)
     vets = Vet.objects.all()
     if request.method == 'POST':
@@ -292,6 +408,10 @@ def add_appointment_to_pet(request, pet_id):
 
 
 def delete_appointment(request, appointment_id):
+
+    """
+    Función que se encarga de eliminar una cita de la base de datos.
+    """
     if request.method == 'POST':
         appointment = get_object_or_404(Appointment, id=appointment_id)
         appointment.delete()
@@ -299,6 +419,10 @@ def delete_appointment(request, appointment_id):
 
 
 def mascota_detalle(request, mascota_id):
+
+    """
+    Se muestra a los veterinarios asociados a una mascota.
+    """
     mascota = get_object_or_404(Pet, pk=mascota_id)
     veterinarios = Vet.objects.filter(appointments__pet=mascota).distinct()
     return render(request, 'pet-vet/mascota_detalle.html', {'mascota': mascota, 'veterinarios': veterinarios})
@@ -306,6 +430,11 @@ def mascota_detalle(request, mascota_id):
 #client-pet
 
 def client_pets(request, client_id):
+
+    """
+    Se muestra todas las mascotas de un cliente.
+
+    """
     client = get_object_or_404(Client, id=client_id)
     pets = client.pets.all()
     return render(request, 'clients/pets/repository.html', {'client': client, 'pets': pets})
@@ -313,20 +442,39 @@ def client_pets(request, client_id):
 
 #medicine
 def medicines_repository(request):
+
+
+    """
+    Renderiza la página del repositorio de medicamentos con todos los medicamentos en la base de datos.
+    """
     medicines = Medicine.objects.all()
     return render(request, "medicines/repository.html", {"medicines": medicines})
 
 def medicines_form(request, id=None):
+
+    """
+    Función que se encarga de manejar el formulario de medicamentos para crear o actualizar un medicamento.
+    """
+    errors = {}
+    medicine_data = {
+        "name": "",
+        "description": "",
+        "dose": ""
+    }
     if request.method == "POST":
+        medicine_data = {
+            "name": request.POST.get("name", ""),
+            "description": request.POST.get("description", ""),
+            "dose": request.POST.get("dose", "")
+        }
         medicine_id = request.POST.get("id", "")
-        errors = {}
         saved = True
 
         if medicine_id == "":
-            saved, errors = Medicine.save_medicine(request.POST)
+            saved, errors = Medicine.save_medicine(medicine_data)
         else:
             medicine = get_object_or_404(Medicine, pk=medicine_id)
-            medicine.update_medicine(request.POST)
+            saved, errors = medicine.update_medicine(medicine_data)
 
         if saved:
             return redirect(reverse("medicines_repo"))
@@ -339,9 +487,13 @@ def medicines_form(request, id=None):
     if id is not None:
         medicine = get_object_or_404(Medicine, pk=id)
 
-    return render(request, "medicines/form.html", {"medicine": medicine})
+    return render(request, "medicines/form.html", {"errors": errors, "medicine": medicine})
 
 def medicines_delete(request):
+
+    """
+    Función que elimina un medicamento de la base de datos.
+    """
     medicine_id = request.POST.get("medicine_id")
     medicine = get_object_or_404(Medicine, pk=int(medicine_id))
     medicine.delete()
@@ -354,12 +506,21 @@ def medicines_delete(request):
 
 
 def pet_medicine_history(request, pet_id):
+
+    """
+    Se muestra el historial de medicamentos de una mascota.
+    """
     pet = get_object_or_404(Pet, id=pet_id)
     medications = pet.medications.all()
     return render(request, 'pets/meds/pet_medications.html', {'pet': pet, 'medications': medications})
 
     
 def add_medicine_to_pet(request, pet_id):
+
+    """
+    Función que se encarga de agregar un medicamento a una mascota.
+    
+    """
     pet = get_object_or_404(Pet, id=pet_id)
     medicines = Medicine.objects.all()
     if request.method == 'POST':
@@ -378,6 +539,10 @@ def add_medicine_to_pet(request, pet_id):
 
 
 def edit_medicine_for_pet(request, pet_id, med_id):
+
+    """
+    Función que se encarga de editar un medicamento de una mascota.
+    """
     pet = get_object_or_404(Pet, id=pet_id)
     pet_medicine = get_object_or_404(PetMedicine, id=med_id)
     medicines = Medicine.objects.all()
@@ -411,6 +576,10 @@ def edit_medicine_for_pet(request, pet_id, med_id):
 
 
 def delete_medicine_for_pet(request, pet_id, medicine_id):
+
+    """
+    Función que se encarga de eliminar un medicamento de una mascota.
+    """
     if request.method == 'POST':
         pet_medicine = get_object_or_404(PetMedicine, id=medicine_id)
         pet_medicine.delete()
@@ -419,6 +588,10 @@ def delete_medicine_for_pet(request, pet_id, medicine_id):
     #historial medico
 
 def pet_medical_history(request, pet_id):
+
+    """
+    Función que se encarga de mostrar el historial médico de una mascota, vinculando las citas y los medicamentos recetados
+    """
     pet = get_object_or_404(Pet, pk=pet_id)
     appointments = pet.appointments.all().order_by('date')
     medications = pet.medications.all().order_by('administration_date')
@@ -451,3 +624,6 @@ def pet_medical_history(request, pet_id):
     events.sort(key=lambda x: x['date'])
 
     return render(request, 'pets/medical_history.html', {'pet': pet, 'events': events})
+
+
+
