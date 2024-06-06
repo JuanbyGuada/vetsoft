@@ -58,6 +58,21 @@ class ClientModelTest(TestCase):
 
         self.assertEqual(client_updated.phone, "221555232")
 
+    def test_nombre_invalido(self):
+        success, errors = Client.save_client(
+            {
+                "name": "brujita75",
+                "phone": "221555232",
+                "address": "13 y 44",
+                "email": "brujita75@hotmail.com",
+            }
+        )
+        self.assertFalse(success)
+        self.assertIn("name", errors)
+        self.assertEqual(errors["name"], "El nombre solo puede contener letras y espacios")
+        client = Client.objects.all()
+        self.assertEqual(len(client), 0)
+
 class ProductModelTest(TestCase):
     def setUp(self):
         # Crear un proveedor para los productos de prueba
