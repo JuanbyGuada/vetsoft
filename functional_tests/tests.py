@@ -281,8 +281,6 @@ class ProductCreateEditTestCase(PlaywrightTestCase):
             page = browser.new_page()
             page.goto(f"{self.live_server_url}{reverse('products_form')}")
 
-            page.wait_for_load_state("networkidle")
-
             expect(page.get_by_role("form")).to_be_visible()
 
             page.get_by_label("Nombre").fill("Collar de Perro") 
@@ -304,7 +302,6 @@ class ProductCreateEditTestCase(PlaywrightTestCase):
             page = browser.new_page()
             page.goto(f"{self.live_server_url}{reverse('products_form')}")
 
-            page.wait_for_load_state("networkidle")
 
             expect(page.get_by_role("form")).to_be_visible()
 
@@ -326,7 +323,6 @@ class MedicineCreateEditTestCase(PlaywrightTestCase):
             page = browser.new_page()
             page.goto(f"{self.live_server_url}{reverse('medicines_form')}")
 
-            page.wait_for_load_state("networkidle")
 
             expect(page.get_by_role("form")).to_be_visible()
 
@@ -347,7 +343,6 @@ class MedicineCreateEditTestCase(PlaywrightTestCase):
             page = browser.new_page()
             page.goto(f"{self.live_server_url}{reverse('medicines_form')}")
 
-            page.wait_for_load_state("networkidle")
 
             expect(page.get_by_role("form")).to_be_visible()
 
