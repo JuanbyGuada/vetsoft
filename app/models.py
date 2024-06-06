@@ -1,7 +1,6 @@
 from django.db import models
 from datetime import datetime
 
-
 def validate_client(data):  
 
     """
@@ -32,7 +31,8 @@ def validate_client(data):
     return errors
 
 
-class Client(models.Model):         #esta clase representa un cliente en la base de datos que tiene un nombre, teléfono, correo electrónico y dirección.
+class Client(models.Model):
+    '''esta clase representa un cliente en la base de datos que tiene un nombre, teléfono, correo electrónico y dirección'''
     name = models.CharField(max_length=100)
     phone = models.CharField(max_length=15)
     email = models.EmailField()
@@ -96,7 +96,8 @@ def validate_provider(data):    #función que nos permitirá validar los datos d
     return errors
 
 
-class Provider(models.Model):       #esta clase representa un proveedor en la base de datos que tiene un nombre y un correo electrónico.
+class Provider(models.Model):
+    ''''esta clase representa un proveedor en la base de datos que tiene un nombre y un correo electrónico.'''
     name = models.CharField(max_length=100)
     email = models.EmailField()
 
@@ -163,7 +164,8 @@ def validate_product(data):         #función que nos permitirá validar los dat
     return errors
 
 
-class Product(models.Model):        #esta clase representa un producto en la base de datos que tiene un nombre, tipo, precio y un proveedor.
+class Product(models.Model):
+    '''esta clase representa un producto en la base de datos que tiene un nombre, tipo, precio y un proveedor.'''
     name = models.CharField(max_length=100)
     type = models.CharField(max_length=50)
     price = models.DecimalField(max_digits=10, decimal_places=2)
@@ -205,7 +207,8 @@ class Product(models.Model):        #esta clase representa un producto en la bas
 
 #client-product (sale)
 
-class Sale(models.Model):                   #esta clase representa una venta en la base de datos que tiene un cliente y un producto.
+class Sale(models.Model):
+    '''esta clase representa una venta en la base de datos que tiene un cliente y un producto.'''
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
 
@@ -244,7 +247,8 @@ def validate_vet(data):
 
     return errors
 
-class Vet(models.Model):        #esta clase representa un veterinario en la base de datos que tiene un nombre, teléfono y correo electrónico.
+class Vet(models.Model):
+    '''esta clase representa un veterinario en la base de datos que tiene un nombre, teléfono y correo electrónico.'''
     name = models.CharField(max_length=100)
     email = models.EmailField()
     phone = models.CharField(max_length=15)
@@ -309,7 +313,8 @@ def validate_medicine(data):
 
     return errors
 
-class Medicine(models.Model):       #esta clase representa un medicamento en la base de datos que tiene un nombre, descripción y dosis.
+class Medicine(models.Model):
+    '''esta clase representa un medicamento en la base de datos que tiene un nombre, descripción y dosis.'''
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=200)
     dose = models.IntegerField()
@@ -375,7 +380,8 @@ def validate_pet(data):
     
     return errors
 
-class Pet(models.Model):        #esta clase representa una mascota en la base de datos que tiene un nombre, raza, fecha de nacimiento y un dueño.
+class Pet(models.Model):
+    '''esta clase representa una mascota en la base de datos que tiene un nombre, raza, fecha de nacimiento y un dueño.'''
     name = models.CharField(max_length=100)
     breed = models.CharField(max_length=100)
     birthday= models.DateField()
@@ -408,7 +414,8 @@ class Pet(models.Model):        #esta clase representa una mascota en la base de
 
         
 #Vet-Pet
-class Appointment(models.Model):        #esta clase representa una cita en la base de datos que tiene una mascota, un veterinario y una fecha.
+class Appointment(models.Model):
+    '''esta clase representa una cita en la base de datos que tiene una mascota, un veterinario y una fecha.'''
     pet = models.ForeignKey(Pet, on_delete=models.CASCADE, related_name='appointments')
     vet = models.ForeignKey(Vet, on_delete=models.CASCADE, related_name='appointments')
     date = models.DateField()
@@ -456,7 +463,8 @@ class Appointment(models.Model):        #esta clase representa una cita en la ba
 #Pet-Med
 
 
-class PetMedicine(models.Model):            #esta clase representa un medicamento administrado a una mascota en la base de datos que tiene una mascota, un medicamento y una fecha de administración.
+class PetMedicine(models.Model):
+    '''Esta clase representa un medicamento administrado a una mascota en la base de datos que tiene una mascota, un medicamento y una fecha de administración.'''
     pet = models.ForeignKey(Pet, on_delete=models.CASCADE, related_name='medications')
     medicine = models.ForeignKey(Medicine, on_delete=models.CASCADE, related_name='used_on_pets')
     administration_date = models.DateField()
