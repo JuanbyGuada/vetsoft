@@ -276,7 +276,7 @@ class ProductCreateEditTestCase(PlaywrightTestCase):
         self.provider = Provider.objects.create(name="ProveedorEjemplo", email="correo@utn.com")
         
     def test_should_be_able_to_create_product_with_valid_price(self):
-        with playwright.chromium.launch() as browser:
+        with playwright.firefox.launch() as browser:
 
             page = browser.new_page()
             page.goto(f"{self.live_server_url}{reverse('products_form')}")
@@ -298,7 +298,7 @@ class ProductCreateEditTestCase(PlaywrightTestCase):
             expect(page.get_by_text("ProveedorEjemplo")).to_be_visible()
 
     def test_create_product_with_invalid_data(self):
-        with playwright.chromium.launch() as browser:
+        with playwright.firefox.launch() as browser:
             page = browser.new_page()
             page.goto(f"{self.live_server_url}{reverse('products_form')}")
 
@@ -318,7 +318,7 @@ class ProductCreateEditTestCase(PlaywrightTestCase):
 
 class MedicineCreateEditTestCase(PlaywrightTestCase):
     def test_should_be_able_to_create_medicine_with_valid_dose(self):
-        with playwright.chromium.launch() as browser:
+        with playwright.firefox.launch() as browser:
 
             page = browser.new_page()
             page.goto(f"{self.live_server_url}{reverse('medicines_form')}")
@@ -339,7 +339,7 @@ class MedicineCreateEditTestCase(PlaywrightTestCase):
             expect(page.get_by_text("5")).to_be_visible()
 
     def test_create_medicine_with_invalid_data(self):
-        with playwright.chromium.launch() as browser:
+        with playwright.firefox.launch() as browser:
             page = browser.new_page()
             page.goto(f"{self.live_server_url}{reverse('medicines_form')}")
 
