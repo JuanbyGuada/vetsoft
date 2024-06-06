@@ -1,5 +1,6 @@
 from django.db import models
 from datetime import datetime
+from django.core.validators import RegexValidator
 
 def validate_client(data):  
 
@@ -19,6 +20,8 @@ def validate_client(data):
 
     if name == "":
         errors["name"] = "Por favor ingrese un nombre"
+    elif not name.replace(" ", "").isalpha():
+        errors["name"] = "El nombre solo puede contener letras y espacios"
 
     if phone == "":
         errors["phone"] = "Por favor ingrese un teléfono"
@@ -33,7 +36,9 @@ def validate_client(data):
 
 class Client(models.Model):
     '''esta clase representa un cliente en la base de datos que tiene un nombre, teléfono, correo electrónico y dirección'''
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100,
+        validators=[RegexValidator(regex=r'^[a-zA-Z\s]+$', message='El nombre solo puede contener letras y espacios')]
+    )
     phone = models.CharField(max_length=15)
     email = models.EmailField()
     address = models.CharField(max_length=100, blank=True)
