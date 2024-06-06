@@ -32,7 +32,7 @@ def validate_client(data):
     return errors
 
 
-class Client(models.Model):
+class Client(models.Model):         #esta clase representa un cliente en la base de datos que tiene un nombre, teléfono, correo electrónico y dirección.
     name = models.CharField(max_length=100)
     phone = models.CharField(max_length=15)
     email = models.EmailField()
@@ -42,13 +42,13 @@ class Client(models.Model):
         return self.name
 
     @classmethod
-    def save_client(cls, client_data): 
+    def save_client(cls, client_data):      #esta funcion es para guardar un cliente en la base de datos
         errors = validate_client(client_data)
 
-        if len(errors.keys()) > 0:
+        if len(errors.keys()) > 0:          #si hay errores en los datos del cliente, se devuelven los errores
             return False, errors
 
-        Client.objects.create(
+        Client.objects.create(              #si no hay errores, se crea un nuevo cliente en la base de datos
             name=client_data.get("name"),
             phone=client_data.get("phone"),
             email=client_data.get("email"),
@@ -69,7 +69,7 @@ class Client(models.Model):
     
 #  Provider Class
 
-def validate_provider(data):
+def validate_provider(data):    #función que nos permitirá validar los datos de un proveedor
     
     """
     valida los datos del proveedor proporcionados en el formulario.
@@ -96,13 +96,13 @@ def validate_provider(data):
     return errors
 
 
-class Provider(models.Model):
+class Provider(models.Model):       #esta clase representa un proveedor en la base de datos que tiene un nombre y un correo electrónico.
     name = models.CharField(max_length=100)
     email = models.EmailField()
 
 
     @classmethod
-    def save_provider(cls, provider_data): 
+    def save_provider(cls, provider_data): #esta función es para guardar un proveedor en la base de datos
         errors = validate_provider(provider_data)
 
         if len(errors.keys()) > 0:
@@ -115,7 +115,7 @@ class Provider(models.Model):
 
         return True, None
 
-    def update_provider(self, provider_data):
+    def update_provider(self, provider_data):       #esta función es para actualizar un proveedor en la base de datos
         self.name = provider_data.get("name", "") or self.name
         self.email = provider_data.get("email", "") or self.email
 
@@ -123,7 +123,7 @@ class Provider(models.Model):
         
 #  Product Class
 
-def validate_product(data): 
+def validate_product(data):         #función que nos permitirá validar los datos de un producto
     
     """
     valida los datos del producto proporcionados en el formulario.
@@ -163,23 +163,23 @@ def validate_product(data):
     return errors
 
 
-class Product(models.Model):
+class Product(models.Model):        #esta clase representa un producto en la base de datos que tiene un nombre, tipo, precio y un proveedor.
     name = models.CharField(max_length=100)
     type = models.CharField(max_length=50)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     provider = models.ForeignKey(Provider, on_delete=models.CASCADE, related_name='products')
 
     @classmethod
-    def save_product(cls, product_data):
+    def save_product(cls, product_data):        #esta función es para guardar un producto en la base de datos
         errors = validate_product(product_data)
 
-        if len(errors.keys()) > 0:
+        if len(errors.keys()) > 0:      #si hay errores en los datos del producto, se devuelven los errores
             return False, errors
         
         provider_id = product_data.get("provider")
-        provider = Provider.objects.get(pk=provider_id) 
+        provider = Provider.objects.get(pk=provider_id)
 
-        Product.objects.create(
+        Product.objects.create(             #si no hay errores, se crea un nuevo producto en la base de datos
             name=product_data.get("name"),
             type=product_data.get("type"),
             price=product_data.get("price"),
@@ -188,7 +188,7 @@ class Product(models.Model):
 
         return True, None
 
-    def update_product(self, product_data):
+    def update_product(self, product_data):         #función que nos permitirá actualizar un producto en la base de datos
         error= validate_product(product_data)
         if len(error.keys()) > 0:
             return False, error
@@ -205,11 +205,11 @@ class Product(models.Model):
 
 #client-product (sale)
 
-class Sale(models.Model):
+class Sale(models.Model):                   #esta clase representa una venta en la base de datos que tiene un cliente y un producto.
     client = models.ForeignKey(Client, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
 
-    class Meta:
+    class Meta:             #esta clase meta nos permite definir restricciones en la base de datos para que un cliente no pueda comprar el mismo producto dos veces.
         unique_together = ['client', 'product'] 
 
 
@@ -244,7 +244,7 @@ def validate_vet(data):
 
     return errors
 
-class Vet(models.Model):
+class Vet(models.Model):        #esta clase representa un veterinario en la base de datos que tiene un nombre, teléfono y correo electrónico.
     name = models.CharField(max_length=100)
     email = models.EmailField()
     phone = models.CharField(max_length=15)
@@ -253,7 +253,7 @@ class Vet(models.Model):
         return self.name
 
     @classmethod
-    def save_vet(cls, vet_data):
+    def save_vet(cls, vet_data):        #esta función es para guardar un veterinario en la base de datos
         errors = validate_client(vet_data)
 
         if len(errors.keys()) > 0:
@@ -266,7 +266,7 @@ class Vet(models.Model):
         )
         return True, None
 
-    def update_vet(self, vet_data):
+    def update_vet(self, vet_data):         #función que nos permitirá actualizar un veterinario en la base de datos
         self.name = vet_data.get("name", "") or self.name
         self.email = vet_data.get("email", "") or self.email
         self.phone = vet_data.get("phone", "") or self.phone
@@ -309,7 +309,7 @@ def validate_medicine(data):
 
     return errors
 
-class Medicine(models.Model):
+class Medicine(models.Model):       #esta clase representa un medicamento en la base de datos que tiene un nombre, descripción y dosis.
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=200)
     dose = models.IntegerField()
@@ -318,7 +318,7 @@ class Medicine(models.Model):
         return self.name
     
     @classmethod
-    def save_medicine(cls, medicine_data):
+    def save_medicine(cls, medicine_data):      #esta función es para guardar un medicamento en la base de datos
         errors = validate_medicine(medicine_data)
 
         if len(errors.keys()) > 0:
@@ -331,7 +331,7 @@ class Medicine(models.Model):
         )
         return True, None
     
-    def update_medicine(self, medicine_data):
+    def update_medicine(self, medicine_data):       #función que nos permitirá actualizar un medicamento en la base de datos
         errors = validate_medicine(medicine_data)
 
         if errors:
@@ -375,7 +375,7 @@ def validate_pet(data):
     
     return errors
 
-class Pet(models.Model):
+class Pet(models.Model):        #esta clase representa una mascota en la base de datos que tiene un nombre, raza, fecha de nacimiento y un dueño.
     name = models.CharField(max_length=100)
     breed = models.CharField(max_length=100)
     birthday= models.DateField()
@@ -399,7 +399,7 @@ class Pet(models.Model):
         )
         return True, None
     
-    def update_pet(self, pet_data):
+    def update_pet(self, pet_data):     #esta función nos permitirá actualizar una mascota en la base de datos
         self.name = pet_data.get("name", "") or self.name
         self.breed = pet_data.get("breed", "") or self.breed
         self.birthday = pet_data.get("birthday", "") or self.birthday
@@ -408,7 +408,7 @@ class Pet(models.Model):
 
         
 #Vet-Pet
-class Appointment(models.Model):
+class Appointment(models.Model):        #esta clase representa una cita en la base de datos que tiene una mascota, un veterinario y una fecha.
     pet = models.ForeignKey(Pet, on_delete=models.CASCADE, related_name='appointments')
     vet = models.ForeignKey(Vet, on_delete=models.CASCADE, related_name='appointments')
     date = models.DateField()
@@ -417,7 +417,7 @@ class Appointment(models.Model):
         return f"Cita para {self.pet.name} con {self.vet.name} el {self.date}"
     
     @staticmethod
-    def validate_petvet(data):
+    def validate_petvet(data):      #función que nos permitirá validar los datos de una cita
         errors = {}
         date = data.get("date", "")
         if not date:
@@ -432,18 +432,18 @@ class Appointment(models.Model):
         return errors
 
     @classmethod
-    def save_appointment(cls, pet_vet_data):
+    def save_appointment(cls, pet_vet_data):        #esta función es para guardar una cita en la base de datos
         errors = cls.validate_petvet(pet_vet_data)
         if len(errors.keys()) > 0:
             return False, errors
         
-        if Appointment.objects.filter(pet_id=pet_vet_data['pet'], vet_id=pet_vet_data['vet'], date=pet_vet_data['date']).exists():
+        if Appointment.objects.filter(pet_id=pet_vet_data['pet'], vet_id=pet_vet_data['vet'], date=pet_vet_data['date']).exists():  #validar que no haya una cita duplicada
             errors['duplicate'] = "Ya existe una cita con estos datos."
             return False, errors
 
         pet = Pet.objects.get(id=pet_vet_data['pet'])
         vet = Vet.objects.get(id=pet_vet_data['vet'])
-        Appointment.objects.create(
+        Appointment.objects.create(     #si no hay errores, se crea una nueva cita en la base de datos
             pet=pet,
             vet=vet,
             date=pet_vet_data['date']
@@ -456,7 +456,7 @@ class Appointment(models.Model):
 #Pet-Med
 
 
-class PetMedicine(models.Model):
+class PetMedicine(models.Model):            #esta clase representa un medicamento administrado a una mascota en la base de datos que tiene una mascota, un medicamento y una fecha de administración.
     pet = models.ForeignKey(Pet, on_delete=models.CASCADE, related_name='medications')
     medicine = models.ForeignKey(Medicine, on_delete=models.CASCADE, related_name='used_on_pets')
     administration_date = models.DateField()
@@ -467,7 +467,7 @@ class PetMedicine(models.Model):
     
     
     @staticmethod
-    def validate_petmed(data):
+    def validate_petmed(data):      #función que nos permitirá validar los datos de un medicamento administrado a una mascota
         errors = {}
         administration_date = data.get("administration_date", "")
 
@@ -483,7 +483,7 @@ class PetMedicine(models.Model):
         return errors
 
     @classmethod
-    def save_petmed(cls, pet_med_data):
+    def save_petmed(cls, pet_med_data):         #esta función es para guardar un medicamento administrado a una mascota en la base de datos
         errors = cls.validate_petmed(pet_med_data)
 
         if len(errors.keys()) > 0:
@@ -499,7 +499,7 @@ class PetMedicine(models.Model):
         )
         return True, None
     
-    def update_petmed(self, pet_med_data):
+    def update_petmed(self, pet_med_data):      #esta función nos permitirá actualizar un medicamento administrado a una mascota en la base de datos
         self.administration_date = pet_med_data.get("administration_date", "")
         if 'medicine' in pet_med_data:
             medicine_id = pet_med_data.get("medicine")
