@@ -1,5 +1,6 @@
 from django.db import models
 from datetime import datetime
+from django.core.validators import RegexValidator
 
 def validate_client(data):  
 
@@ -19,6 +20,8 @@ def validate_client(data):
 
     if name == "":
         errors["name"] = "Por favor ingrese un nombre"
+    elif not name.replace(" ", "").isalpha():
+        errors["name"] = "El nombre solo puede contener letras y espacios"
 
     if phone == "":
         errors["phone"] = "Por favor ingrese un teléfono"
@@ -41,7 +44,9 @@ def validate_client(data):
 
 class Client(models.Model):
     '''esta clase representa un cliente en la base de datos que tiene un nombre, teléfono, correo electrónico y dirección'''
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100,
+        validators=[RegexValidator(regex=r'^[a-zA-Z\s]+$', message='El nombre solo puede contener letras y espacios')]
+    )
     phone = models.CharField(max_length=15)
     email = models.EmailField()
     address = models.CharField(max_length=100, blank=True)
@@ -65,12 +70,20 @@ class Client(models.Model):
 
         return True, None
 
+<<<<<<< HEAD
     def update_client(self, client_data):  #función que nos permitirá actualizar un cliente en la base de datos
         
         error= validate_client(client_data)
         if len(error.keys()) > 0:
             return False, error
         
+=======
+    def update_client(self, client_data):  
+        errors = validate_client(client_data)
+
+        if len(errors.keys()) > 0:  
+            return False, errors
+>>>>>>> develop
 
         self.name = client_data.get("name", "") or self.name
         self.email = client_data.get("email", "") or self.email
@@ -78,6 +91,9 @@ class Client(models.Model):
         self.address = client_data.get("address", "") or self.address
         self.save()
         return True, None
+
+        return True, None
+
 
         
 

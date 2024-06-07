@@ -83,8 +83,13 @@ class ClientsTest(TestCase):
             data={
                 "id": client.id,
                 "name": "Guido Carrillo",
+<<<<<<< HEAD
                 "phone": client.phone,
                 "address": client.address,
+=======
+                "address": client.address,
+                "phone": client.phone,
+>>>>>>> develop
                 "email": client.email,
             },
         )
