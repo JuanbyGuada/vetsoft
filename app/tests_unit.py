@@ -7,7 +7,7 @@ class ClientModelTest(TestCase):
         Client.save_client(
             {
                 "name": "Juan Sebastian Veron",
-                "phone": "221555232",
+                "phone": "54221555232",
                 "address": "13 y 44",
                 "email": "brujita75@hotmail.com",
             }
@@ -16,7 +16,7 @@ class ClientModelTest(TestCase):
         self.assertEqual(len(clients), 1)
 
         self.assertEqual(clients[0].name, "Juan Sebastian Veron")
-        self.assertEqual(clients[0].phone, "221555232")
+        self.assertEqual(clients[0].phone, "54221555232")
         self.assertEqual(clients[0].address, "13 y 44")
         self.assertEqual(clients[0].email, "brujita75@hotmail.com")
 
@@ -24,28 +24,48 @@ class ClientModelTest(TestCase):
         Client.save_client(
             {
                 "name": "Juan Sebastian Veron",
-                "phone": "221555232",
+                "phone": "54221555232",
                 "address": "13 y 44",
                 "email": "brujita75@hotmail.com",
             }
         )
         client = Client.objects.get(pk=1)
 
-        self.assertEqual(client.phone, "221555232")
+        self.assertEqual(client.phone, "54221555232")
 
-        client.update_client(
-            {"name": "Juan Sebastian Veron",
-            "phone": "221555233",
-            "address": "13 y 44",
-            "email": "brujita75@hotmail.com"}
-        )
+        client.update_client({
+            "name": client.name,
+            "phone": "54221555233",
+            "address": client.address,
+            "email": client.email,
+            })
 
         client_updated = Client.objects.get(pk=1)
 
-        self.assertEqual(client_updated.phone, "221555233")
+        self.assertEqual(client_updated.phone, "54221555233")
 
     def test_update_client_with_error(self):
         Client.save_client(
+            {
+                "name": "Juan Sebastian Veron",
+                "phone": "54221555232",
+                "address": "13 y 44",
+                "email": "brujita75@hotmail.com",
+            }
+        )
+        client = Client.objects.get(pk=1)
+
+        self.assertEqual(client.phone, "54221555232")
+
+        client.update_client({"phone": ""})
+
+        client_updated = Client.objects.get(pk=1)
+
+        self.assertEqual(client_updated.phone, "54221555232")
+
+
+    def test_cant_create_with_invalid_phone(self):
+        success, errors= Client.save_client(
             {
                 "name": "Juan Sebastian Veron",
                 "phone": "221555232",
@@ -53,19 +73,38 @@ class ClientModelTest(TestCase):
                 "email": "brujita75@hotmail.com",
             }
         )
+        clients = Client.objects.all()
+        self.assertEqual(len(clients), 0)
+        self.assertFalse(success)
+        self.assertIn("phone", errors)
+        self.assertEqual(errors["phone"], "El teléfono debe empezar con 54")
+
+
+    def test_cant_update_client_with_invalid_phone(self):
+        Client.save_client(
+            {
+                "name": "Juan Sebastian Veron",
+                "phone": "54221555232",
+                "address": "13 y 44",
+                "email": "brujita75@hotmail.com",
+            }
+        )
         client = Client.objects.get(pk=1)
 
-        self.assertEqual(client.phone, "221555232")
+        self.assertEqual(client.phone, "54221555232")
 
-        client.update_client(
-                    {"name": "Juan Sebastian Veron",
-                    "phone": "",
-                    "address": "13 y 44",
-                    "email": "brujita75@hotmail.com"}
-        )
-        client_updated = Client.objects.get(pk=1)
+        success, errors= client.update_client({
+            "name": client.name,
+            "phone": "221555233",
+            "address": client.address,
+            "email": client.email,
+            })
+        
+        self.assertFalse(success)
+        self.assertIn("phone", errors)
+        self.assertEqual(errors["phone"], "El teléfono debe empezar con 54")
 
-        self.assertEqual(client_updated.phone, "221555232")
+
 
     def test_nombre_invalido(self):
         success, errors = Client.save_client(

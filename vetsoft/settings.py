@@ -33,8 +33,8 @@ ALLOWED_HOSTS = ['vetsoft-app-2-0-sad8.onrender.com', 'localhost', '127.0.0.1', 
 CSRF_TRUSTED_ORIGINS = ['https://vetsoft-app-2-0-sad8.onrender.com',]
 
 
-
 # Application definition
+# SECURITY WARNING: don't run with debug turned on in production!
 
 INSTALLED_APPS = [
     "app.apps.AppConfig",
