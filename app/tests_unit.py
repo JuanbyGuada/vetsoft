@@ -33,7 +33,12 @@ class ClientModelTest(TestCase):
 
         self.assertEqual(client.phone, "221555232")
 
-        client.update_client({"phone": "221555233"})
+        client.update_client(
+            {"name": "Juan Sebastian Veron",
+            "phone": "221555233",
+            "address": "13 y 44",
+            "email": "brujita75@hotmail.com"}
+        )
 
         client_updated = Client.objects.get(pk=1)
 
@@ -52,11 +57,30 @@ class ClientModelTest(TestCase):
 
         self.assertEqual(client.phone, "221555232")
 
-        client.update_client({"phone": ""})
-
+        client.update_client(
+                    {"name": "Juan Sebastian Veron",
+                    "phone": "",
+                    "address": "13 y 44",
+                    "email": "brujita75@hotmail.com"}
+        )
         client_updated = Client.objects.get(pk=1)
 
         self.assertEqual(client_updated.phone, "221555232")
+
+    def test_nombre_invalido(self):
+        success, errors = Client.save_client(
+            {
+                "name": "brujita75",
+                "phone": "221555232",
+                "address": "13 y 44",
+                "email": "brujita75@hotmail.com",
+            }
+        )
+        self.assertFalse(success)
+        self.assertIn("name", errors)
+        self.assertEqual(errors["name"], "El nombre solo puede contener letras y espacios")
+        client = Client.objects.all()
+        self.assertEqual(len(client), 0)
 
 class ProductModelTest(TestCase):
     def setUp(self):
