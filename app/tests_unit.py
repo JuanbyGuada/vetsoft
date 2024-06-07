@@ -33,21 +33,12 @@ class ClientModelTest(TestCase):
 
         self.assertEqual(client.phone, "54221555232")
 
-<<<<<<< HEAD
         client.update_client({
             "name": client.name,
             "phone": "54221555233",
             "address": client.address,
             "email": client.email,
             })
-=======
-        client.update_client(
-            {"name": "Juan Sebastian Veron",
-            "phone": "221555233",
-            "address": "13 y 44",
-            "email": "brujita75@hotmail.com"}
-        )
->>>>>>> develop
 
         client_updated = Client.objects.get(pk=1)
 
@@ -113,17 +104,6 @@ class ClientModelTest(TestCase):
         self.assertIn("phone", errors)
         self.assertEqual(errors["phone"], "El teléfono debe empezar con 54")
 
-<<<<<<< HEAD
-
-=======
-        client.update_client(
-                    {"name": "Juan Sebastian Veron",
-                    "phone": "",
-                    "address": "13 y 44",
-                    "email": "brujita75@hotmail.com"}
-        )
-        client_updated = Client.objects.get(pk=1)
->>>>>>> develop
 
 
     def test_nombre_invalido(self):
