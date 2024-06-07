@@ -31,7 +31,7 @@ jobs:
                   context: .
                   file: ./Dockerfile
                   push: true
-                  tags: ${{ secrets.DOCKERHUB_USERNAME }}/vetsoft:latest,${{ secrets.DOCKERHUB_USERNAME }}/vetsoft:${{ env.date }}
+                  tags: ${{ secrets.DOCKERHUB_USERNAME }}/vetsoft-app:latest,${{ secrets.DOCKERHUB_USERNAME }}/vetsoft-app:${{ env.date }}
 
             - name: Deploy
               run: curl ${{ secrets.RENDER_HOOK }}
