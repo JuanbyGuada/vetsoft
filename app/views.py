@@ -1,6 +1,17 @@
-from django.shortcuts import render, redirect, reverse, get_object_or_404
 from django.http import HttpResponseRedirect
-from .models import Client, Product, Pet, Vet, Medicine, Provider, Sale, PetMedicine, Appointment
+from django.shortcuts import get_object_or_404, redirect, render, reverse
+
+from .models import (
+    Appointment,
+    Client,
+    Medicine,
+    Pet,
+    PetMedicine,
+    Product,
+    Provider,
+    Sale,
+    Vet,
+)
 
 
 def home(request):
