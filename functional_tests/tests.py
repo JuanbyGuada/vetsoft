@@ -269,6 +269,42 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
             "href", reverse("clients_edit", kwargs={"id": client.id})
         )
 
+    
+    def test_should_view_error_if_phone_is_invalid(self):
+        self.page.goto(f"{self.live_server_url}{reverse('clients_form')}")
+
+        expect(self.page.get_by_role("form")).to_be_visible()
+
+        self.page.get_by_role("button", name="Guardar").click()
+
+        expect(self.page.get_by_text("Por favor ingrese un nombre")).to_be_visible()
+        expect(self.page.get_by_text("Por favor ingrese un teléfono")).to_be_visible()
+        expect(self.page.get_by_text("Por favor ingrese un email")).to_be_visible()
+
+        self.page.get_by_label("Nombre").fill("Juan Sebastián Veron")
+        self.page.get_by_label("Teléfono").fill("221555232")
+        self.page.get_by_label("Email").fill("goleador@gmail.com")
+        self.page.get_by_label("Dirección").fill("13 y 44")
+
+        self.page.get_by_role("button", name="Guardar").click()
+
+        expect(self.page.get_by_text("El teléfono debe empezar con 54")).to_be_visible()
+
+        self.page.get_by_label("Teléfono").fill("cincuenta y cuatro 221555232")
+
+        self.page.get_by_role("button", name="Guardar").click()
+
+        expect(self.page.get_by_text("El teléfono debe empezar con 54")).not_to_be_visible()
+        expect(self.page.get_by_text("El teléfono debe ser un número")).to_be_visible()
+
+        self.page.get_by_label("Teléfono").fill("54221555232")
+
+        self.page.get_by_role("button", name="Guardar").click()
+
+        expect(self.page.get_by_text("El teléfono debe empezar con 54")).not_to_be_visible()
+        expect(self.page.get_by_text("El teléfono debe ser un número")).not_to_be_visible()
+
+
 class ProductCreateEditTestCase(PlaywrightTestCase):
     def setUp(self):
         super().setUp()
