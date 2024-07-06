@@ -269,7 +269,27 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
             "href", reverse("clients_edit", kwargs={"id": client.id})
         )
 
-    
+    #test sobre error al crear cliente con nombre invalido
+    def test_should_view_errors_if_name_is_invalid(self):
+        self.page.goto(f"{self.live_server_url}{reverse('clients_form')}")
+
+        expect(self.page.get_by_role("form")).to_be_visible()
+
+        self.page.get_by_label("Nombre").fill("brujita75")
+        self.page.get_by_label("Teléfono").fill("221555232")
+        self.page.get_by_label("Email").fill("brujita75@hotmail.com")
+        self.page.get_by_label("Dirección").fill("13 y 44")
+
+        self.page.get_by_role("button", name="Guardar").click()
+
+        expect(self.page.get_by_text("El nombre solo puede contener letras y espacios")).to_be_visible()
+
+        self.page.get_by_label("Nombre").fill("Juan Sebastián Veron")
+
+        self.page.get_by_role("button", name="Guardar").click()
+
+        expect(self.page.get_by_text("El nombre solo puede contener letras y espacios")).not_to_be_visible()
+
     def test_should_view_error_if_phone_is_invalid(self):
         self.page.goto(f"{self.live_server_url}{reverse('clients_form')}")
 
@@ -303,7 +323,6 @@ class ClientCreateEditTestCase(PlaywrightTestCase):
 
         expect(self.page.get_by_text("El teléfono debe empezar con 54")).not_to_be_visible()
         expect(self.page.get_by_text("El teléfono debe ser un número")).not_to_be_visible()
-
 
 class ProductCreateEditTestCase(PlaywrightTestCase):
     def setUp(self):

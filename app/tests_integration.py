@@ -56,6 +56,19 @@ class ClientsTest(TestCase):
         response = self.client.get(reverse("clients_edit", kwargs={"id": 100}))
         self.assertEqual(response.status_code, 404)
 
+# Test para verificar que se muestre un error si el nombre contiene letras y/o espacios
+    def test_validation_invalid_name(self):
+        response = self.client.post(
+            reverse("clients_form"),
+            data={
+                "name": "brujita75",
+                "phone": "221555232",
+                "address": "13 y 44",
+                "email": "brujita75@hotmail.com"
+            },
+        )
+        self.assertContains(response, "El nombre solo puede contener letras y espacios")
+
     def test_validation_invalid_email(self):
         response = self.client.post(
             reverse("clients_form"),
