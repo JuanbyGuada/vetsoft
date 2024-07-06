@@ -99,6 +99,19 @@ class ClientsTest(TestCase):
         self.assertEqual(editedClient.address, client.address)
         self.assertEqual(editedClient.email, client.email)
 
+    def test_validation_invalid_phone(self):
+        response = self.client.post(
+            reverse("clients_form"),
+            data={
+                "name": "Juan Sebastian Veron",
+                "phone": "221555232",
+                "address": "13 y 44",
+                "email": "brujita75",
+            },
+        )
+
+        self.assertContains(response, "El teléfono debe empezar con 54")
+
 class ProductTest(TestCase):
     def setUp(self): # Crear un proveedor para los productos de prueba
         self.provider = Provider.objects.create(name="ProveedorEjemplo", email="correo@utn.com")
